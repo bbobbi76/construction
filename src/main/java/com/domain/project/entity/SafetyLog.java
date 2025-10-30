@@ -1,38 +1,68 @@
-package com.domain.project.dto;
+package com.domain.project.entity;
 
-import java.util.List;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 
-// (파일 상단에 있던 SafetyCheckItemDto 클래스 코드를 "삭제"합니다)
+@Entity // 이 클래스가 DB 테이블임을 알림
+public class SafetyLog {
 
-/**
- * 안전일지 (SafetyLog) 메인 DTO 클래스.
- * 이제부터 별도의 public 파일로 분리된 EquipmentDto와 SafetyCheckItemDto를 참조합니다.
- */
-public class SafetyLogDto {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id; // 일지 고유 ID
 
-    // --- 공통 항목 ---
     private String company;
     private String logDate;
     private String weather;
     private String location;
+
+    @Lob
     private String workDetails;
+
     private String workType;
     private int workersCount;
-    private List<String> workerNames;
+
+    @Lob
+    private String workerNames; // DTO의 List<String> -> JSON 문자열로 변환하여 저장
+
+    @Lob
     private String remarks;
+
     private String manager;
-    private List<EquipmentDto> equipment; // (별도 파일의 public EquipmentDto를 참조)
-    private List<String> photos;
-    private String signature;
-    private List<String> attachments;
+
+    @Lob
+    private String equipment; // DTO의 List<EquipmentDto> -> JSON 문자열로 변환하여 저장
+
+    @Lob
+    private String photos; // DTO의 List<String> -> JSON 문자열로 변환하여 저장
+
+    @Lob
+    private String signature; // DTO의 String (Base64 또는 URL) -> 긴 텍스트로 저장
+
+    @Lob
+    private String attachments; // DTO의 List<String> -> JSON 문자열로 변환하여 저장
 
     // --- 안전일지 고유 항목 ---
+    @Lob
     private String riskFactors;
+
+    @Lob
     private String correctiveActions;
-    private List<SafetyCheckItemDto> safetyChecklist; // (별도 파일의 public SafetyCheckItemDto를 참조)
+
+    @Lob
+    private String safetyChecklist; // DTO의 List<SafetyCheckItemDto> -> JSON 문자열로 변환
 
 
-    // --- Getter 및 Setter (전체) ---
+    // --- Getter/Setter (JPA가 사용) ---
+
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getCompany() {
         return company;
@@ -83,10 +113,10 @@ public class SafetyLogDto {
         this.workersCount = workersCount;
     }
 
-    public List<String> getWorkerNames() {
+    public String getWorkerNames() {
         return workerNames;
     }
-    public void setWorkerNames(List<String> workerNames) {
+    public void setWorkerNames(String workerNames) {
         this.workerNames = workerNames;
     }
 
@@ -104,17 +134,17 @@ public class SafetyLogDto {
         this.manager = manager;
     }
 
-    public List<EquipmentDto> getEquipment() {
+    public String getEquipment() {
         return equipment;
     }
-    public void setEquipment(List<EquipmentDto> equipment) {
+    public void setEquipment(String equipment) {
         this.equipment = equipment;
     }
 
-    public List<String> getPhotos() {
+    public String getPhotos() {
         return photos;
     }
-    public void setPhotos(List<String> photos) {
+    public void setPhotos(String photos) {
         this.photos = photos;
     }
 
@@ -125,10 +155,10 @@ public class SafetyLogDto {
         this.signature = signature;
     }
 
-    public List<String> getAttachments() {
+    public String getAttachments() {
         return attachments;
     }
-    public void setAttachments(List<String> attachments) {
+    public void setAttachments(String attachments) {
         this.attachments = attachments;
     }
 
@@ -146,10 +176,10 @@ public class SafetyLogDto {
         this.correctiveActions = correctiveActions;
     }
 
-    public List<SafetyCheckItemDto> getSafetyChecklist() {
+    public String getSafetyChecklist() {
         return safetyChecklist;
     }
-    public void setSafetyChecklist(List<SafetyCheckItemDto> safetyChecklist) {
-        this.safetyChecklist = safetyChecklist; // (이전에 오류가 있던 부분 수정)
+    public void setSafetyChecklist(String safetyChecklist) {
+        this.safetyChecklist = safetyChecklist;
     }
 }

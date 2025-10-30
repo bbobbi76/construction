@@ -22,6 +22,22 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+
+    /**
+     * JPA (Java Persistence API) 라이브러리 입니다.
+     * 우리가 만든 Java 클래스(Entity)를 보고
+     * 데이터베이스 테이블(H2)과 자동으로 연결(매핑)해주는 '번역기' 역할을 합니다.
+     * (예: ConstructionLog.java  <--->  CONSTRUCTION_LOG 테이블)
+     */
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    /**
+     * H2 데이터베이스 드라이버입니다.
+     * Spring Boot가 H2 DB와 실제로 통신할 수 있게 해주는 '연결 프로그램'입니다.
+     * runtimeOnly = 이 프로그램은 앱이 '실행될 때(runtime)'만 필요하다는 뜻입니다.
+     */
+    runtimeOnly 'com.h2database:h2'
 }
 
 tasks.named('test') {

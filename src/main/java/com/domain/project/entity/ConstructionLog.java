@@ -1,36 +1,64 @@
-package com.domain.project.dto;
+package com.domain.project.entity;
 
-import java.util.List;
+// jakarta.persistence는 JPA(DB 연동 기술) 관련 라이브러리입니다.
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob; // Lob 어노테이션 임포트
 
-// (파일 상단에 있던 EquipmentDto, MaterialDto 클래스 코드를 "삭제"합니다)
+@Entity // 이 클래스가 DB 테이블임을 JPA에게 알림
+public class ConstructionLog {
 
-/**
- * 공사일지 (ConstructionLog) 메인 DTO 클래스.
- * 이제부터 별도의 public 파일로 분리된 EquipmentDto와 MaterialDto를 참조합니다.
- */
-public class ConstructionLogDto {
+    @Id // 이 필드가 Primary Key(고유 식별자)임을 알림
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // DB가 id를 자동으로 생성/증가 (Auto-increment)
+    private Long id; // 일지 고유 ID (숫자 타입)
 
-    // --- 공통 항목 ---
     private String company;
     private String logDate;
     private String weather;
     private String location;
+
+    @Lob // Large Object: 아주 긴 텍스트(여러 줄)를 저장할 수 있음
     private String workDetails;
+
     private String workType;
     private int workersCount;
-    private List<String> workerNames;
+
+    @Lob
+    private String workerNames; // DTO의 List<String> -> JSON 문자열로 변환하여 저장
+
+    @Lob
     private String remarks;
+
     private String manager;
-    private List<EquipmentDto> equipment; // (별도 파일의 public EquipmentDto를 참조)
-    private List<String> photos;
-    private String signature;
-    private List<String> attachments;
+
+    @Lob
+    private String equipment; // DTO의 List<EquipmentDto> -> JSON 문자열로 변환하여 저장
+
+    @Lob
+    private String photos; // DTO의 List<String> -> JSON 문자열로 변환하여 저장
+
+    @Lob
+    private String signature; // DTO의 String (Base64 또는 URL) -> 긴 텍스트로 저장
+
+    @Lob
+    private String attachments; // DTO의 List<String> -> JSON 문자열로 변환하여 저장
 
     // --- 공사일지 고유 항목 ---
-    private List<MaterialDto> materials; // (별도 파일의 public MaterialDto를 참조)
+    @Lob
+    private String materials; // DTO의 List<MaterialDto> -> JSON 문자열로 변환하여 저장
 
 
-    // --- Getter 및 Setter (전체) ---
+    // --- Getter/Setter ---
+    // JPA가 DB에서 데이터를 조회/저장할 때 사용합니다.
+
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getCompany() {
         return company;
@@ -81,10 +109,10 @@ public class ConstructionLogDto {
         this.workersCount = workersCount;
     }
 
-    public List<String> getWorkerNames() {
+    public String getWorkerNames() {
         return workerNames;
     }
-    public void setWorkerNames(List<String> workerNames) {
+    public void setWorkerNames(String workerNames) {
         this.workerNames = workerNames;
     }
 
@@ -102,17 +130,17 @@ public class ConstructionLogDto {
         this.manager = manager;
     }
 
-    public List<EquipmentDto> getEquipment() {
+    public String getEquipment() {
         return equipment;
     }
-    public void setEquipment(List<EquipmentDto> equipment) {
+    public void setEquipment(String equipment) {
         this.equipment = equipment;
     }
 
-    public List<String> getPhotos() {
+    public String getPhotos() {
         return photos;
     }
-    public void setPhotos(List<String> photos) {
+    public void setPhotos(String photos) {
         this.photos = photos;
     }
 
@@ -123,17 +151,17 @@ public class ConstructionLogDto {
         this.signature = signature;
     }
 
-    public List<String> getAttachments() {
+    public String getAttachments() {
         return attachments;
     }
-    public void setAttachments(List<String> attachments) {
+    public void setAttachments(String attachments) {
         this.attachments = attachments;
     }
 
-    public List<MaterialDto> getMaterials() {
+    public String getMaterials() {
         return materials;
     }
-    public void setMaterials(List<MaterialDto> materials) {
+    public void setMaterials(String materials) {
         this.materials = materials;
     }
 }
