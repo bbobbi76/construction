@@ -9,7 +9,7 @@ import java.util.List;
  * 이제부터 별도의 public 파일로 분리된 EquipmentDto와 MaterialDto를 참조합니다.
  */
 public class ConstructionLogDto {
-
+    private Long id; // DB에서 생성된 고유 ID
     // --- 공통 항목 ---
     private String company;
     private String logDate;
@@ -31,6 +31,14 @@ public class ConstructionLogDto {
 
 
     // --- Getter 및 Setter (전체) ---
+
+    //  id의 Getter/Setter
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getCompany() {
         return company;

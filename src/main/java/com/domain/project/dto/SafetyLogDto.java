@@ -11,6 +11,7 @@ import java.util.List;
 public class SafetyLogDto {
 
     // --- 공통 항목 ---
+    private Long id; // DB에서 생성된 고유 ID
     private String company;
     private String logDate;
     private String weather;
@@ -33,6 +34,14 @@ public class SafetyLogDto {
 
 
     // --- Getter 및 Setter (전체) ---
+
+    // id의 Getter/Setter
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getCompany() {
         return company;
