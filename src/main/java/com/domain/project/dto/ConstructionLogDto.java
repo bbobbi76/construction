@@ -2,11 +2,9 @@ package com.domain.project.dto;
 
 import java.util.List;
 
-// (파일 상단에 있던 EquipmentDto, MaterialDto 클래스 코드를 "삭제"합니다)
-
 /**
  * 공사일지 (ConstructionLog) 메인 DTO 클래스.
- * 이제부터 별도의 public 파일로 분리된 EquipmentDto와 MaterialDto를 참조합니다.
+ *  별도의 public 파일로 분리된 EquipmentDto와 MaterialDto를 참조합니다.
  */
 public class ConstructionLogDto {
     private Long id; // DB에서 생성된 고유 ID

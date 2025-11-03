@@ -13,7 +13,7 @@ public class ConstructionLogController {
 
     private final ConstructionLogService constructionLogService; // Service를 주입받습니다.
 
-    // 4. 생성자 주입 (Lombok을 사용하지 않으므로 직접 작성)
+    // 4. 생성자 주입
     public ConstructionLogController(ConstructionLogService constructionLogService) {
         this.constructionLogService = constructionLogService;
     }

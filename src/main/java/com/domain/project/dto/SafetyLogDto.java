@@ -2,8 +2,6 @@ package com.domain.project.dto;
 
 import java.util.List;
 
-// (파일 상단에 있던 SafetyCheckItemDto 클래스 코드를 "삭제"합니다)
-
 /**
  * 안전일지 (SafetyLog) 메인 DTO 클래스.
  * 이제부터 별도의 public 파일로 분리된 EquipmentDto와 SafetyCheckItemDto를 참조합니다.
@@ -159,6 +157,6 @@ public class SafetyLogDto {
         return safetyChecklist;
     }
     public void setSafetyChecklist(List<SafetyCheckItemDto> safetyChecklist) {
-        this.safetyChecklist = safetyChecklist; // (이전에 오류가 있던 부분 수정)
+        this.safetyChecklist = safetyChecklist;
     }
 }

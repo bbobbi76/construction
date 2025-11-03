@@ -159,5 +159,5 @@ public class ConstructionLogService {
         }
     }
 
-    // (참고) 개별 변환 헬퍼 메서드(convertEquipmentDtoToEntity 등)는 더 이상 필요 없으므로 삭제했습니다.
+
 }

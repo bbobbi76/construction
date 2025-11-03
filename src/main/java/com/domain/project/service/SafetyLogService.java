@@ -50,7 +50,7 @@ public class SafetyLogService {
 
     /**
      * DTO -> Entity 변환 (DB 저장용)
-     * [수정됨] List 객체들을 JSON 문자열로 변환하여 Entity의 String 필드에 저장합니다.
+     *  List 객체들을 JSON 문자열로 변환하여 Entity의 String 필드에 저장합니다.
      */
     private SafetyLog dtoToEntity(SafetyLogDto dto) {
         SafetyLog entity = new SafetyLog();
@@ -71,7 +71,7 @@ public class SafetyLogService {
         entity.setRiskFactors(dto.getRiskFactors());
         entity.setCorrectiveActions(dto.getCorrectiveActions());
 
-        // 3. [수정] List -> JSON String 변환
+        // 3.  List -> JSON String 변환
         entity.setWorkerNames(convertListToJsonString(dto.getWorkerNames()));
         entity.setPhotos(convertListToJsonString(dto.getPhotos()));
         entity.setAttachments(convertListToJsonString(dto.getAttachments()));
@@ -83,12 +83,12 @@ public class SafetyLogService {
 
     /**
      * Entity -> DTO 변환 (클라이언트 반환용)
-     * [수정됨] Entity의 JSON 문자열 필드를 List 객체로 변환하여 DTO에 저장합니다.
+     *  Entity의 JSON 문자열 필드를 List 객체로 변환하여 DTO에 저장합니다.
      */
     private SafetyLogDto entityToDto(SafetyLog entity) {
         SafetyLogDto dto = new SafetyLogDto();
 
-        // 1. ID 값 세팅 (필수!)
+        // 1. ID 값 세팅
         dto.setId(entity.getId());
 
         // 2. 단순 필드 복사 (공통 항목)
@@ -107,7 +107,7 @@ public class SafetyLogService {
         dto.setRiskFactors(entity.getRiskFactors());
         dto.setCorrectiveActions(entity.getCorrectiveActions());
 
-        // 4. [수정] JSON String -> List 변환
+        // 4. JSON String -> List 변환
         dto.setWorkerNames(convertJsonStringToListString(entity.getWorkerNames()));
         dto.setPhotos(convertJsonStringToListString(entity.getPhotos()));
         dto.setAttachments(convertJsonStringToListString(entity.getAttachments()));
