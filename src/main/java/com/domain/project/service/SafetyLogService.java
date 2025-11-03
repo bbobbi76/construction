@@ -1,11 +1,11 @@
 package com.domain.project.service;
 
-// 1. 필요한 import 문들 (Jackson 라이브러리 추가)
-import com.domain.project.entity.ConstructionLog;
-import com.domain.project.dto.ConstructionLogDto;
+// 1. 필요한 import 문들 (DTO, Entity, Repository 및 JSON 변환 도구)
+import com.domain.project.entity.SafetyLog;
 import com.domain.project.dto.EquipmentDto;
-import com.domain.project.dto.MaterialDto;
-import com.domain.project.repository.ConstructionLogRepository;
+import com.domain.project.dto.SafetyCheckItemDto;
+import com.domain.project.dto.SafetyLogDto;
+import com.domain.project.repository.SafetyLogRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,33 +16,33 @@ import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
-public class ConstructionLogService {
+public class SafetyLogService {
 
-    private final ConstructionLogRepository constructionLogRepository;
-    private final ObjectMapper objectMapper; // 2. JSON 변환을 위한 ObjectMapper 주입
+    private final SafetyLogRepository safetyLogRepository;
+    private final ObjectMapper objectMapper; // JSON 변환을 위한 ObjectMapper
 
-    // 3. 생성자 주입 (Repository와 ObjectMapper)
-    public ConstructionLogService(ConstructionLogRepository constructionLogRepository, ObjectMapper objectMapper) {
-        this.constructionLogRepository = constructionLogRepository;
+    // 2. 생성자 주입 (Repository와 ObjectMapper)
+    public SafetyLogService(SafetyLogRepository safetyLogRepository, ObjectMapper objectMapper) {
+        this.safetyLogRepository = safetyLogRepository;
         this.objectMapper = objectMapper;
     }
 
     /**
-     * 1. 공사일지 저장 (POST)
+     * 1. 안전일지 저장 (POST)
      */
     @Transactional
-    public ConstructionLogDto createLog(ConstructionLogDto dto) {
-        ConstructionLog entity = dtoToEntity(dto);
-        ConstructionLog savedEntity = constructionLogRepository.save(entity);
+    public SafetyLogDto createLog(SafetyLogDto dto) {
+        SafetyLog entity = dtoToEntity(dto);
+        SafetyLog savedEntity = safetyLogRepository.save(entity);
         return entityToDto(savedEntity);
     }
 
     /**
-     * 2. 공사일지 단건 조회 (GET)
+     * 2. 안전일지 단건 조회 (GET)
      */
-    public ConstructionLogDto getLogById(Long id) {
-        ConstructionLog entity = constructionLogRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 공사일지가 없습니다. id=" + id));
+    public SafetyLogDto getLogById(Long id) {
+        SafetyLog entity = safetyLogRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 안전일지가 없습니다. id=" + id));
         return entityToDto(entity);
     }
 
@@ -52,10 +52,10 @@ public class ConstructionLogService {
      * DTO -> Entity 변환 (DB 저장용)
      * [수정됨] List 객체들을 JSON 문자열로 변환하여 Entity의 String 필드에 저장합니다.
      */
-    private ConstructionLog dtoToEntity(ConstructionLogDto dto) {
-        ConstructionLog entity = new ConstructionLog();
+    private SafetyLog dtoToEntity(SafetyLogDto dto) {
+        SafetyLog entity = new SafetyLog();
 
-        // 1. 단순 필드 복사
+        // 1. 단순 필드 복사 (공통 항목)
         entity.setCompany(dto.getCompany());
         entity.setLogDate(dto.getLogDate());
         entity.setWeather(dto.getWeather());
@@ -67,12 +67,16 @@ public class ConstructionLogService {
         entity.setManager(dto.getManager());
         entity.setSignature(dto.getSignature());
 
-        // 2. [수정] List -> JSON String 변환
+        // 2. 단순 필드 복사 (안전일지 고유 항목)
+        entity.setRiskFactors(dto.getRiskFactors());
+        entity.setCorrectiveActions(dto.getCorrectiveActions());
+
+        // 3. [수정] List -> JSON String 변환
         entity.setWorkerNames(convertListToJsonString(dto.getWorkerNames()));
         entity.setPhotos(convertListToJsonString(dto.getPhotos()));
         entity.setAttachments(convertListToJsonString(dto.getAttachments()));
         entity.setEquipment(convertListToJsonString(dto.getEquipment()));
-        entity.setMaterials(convertListToJsonString(dto.getMaterials()));
+        entity.setSafetyChecklist(convertListToJsonString(dto.getSafetyChecklist())); // 안전 체크리스트 변환
 
         return entity;
     }
@@ -81,13 +85,13 @@ public class ConstructionLogService {
      * Entity -> DTO 변환 (클라이언트 반환용)
      * [수정됨] Entity의 JSON 문자열 필드를 List 객체로 변환하여 DTO에 저장합니다.
      */
-    private ConstructionLogDto entityToDto(ConstructionLog entity) {
-        ConstructionLogDto dto = new ConstructionLogDto();
+    private SafetyLogDto entityToDto(SafetyLog entity) {
+        SafetyLogDto dto = new SafetyLogDto();
 
         // 1. ID 값 세팅 (필수!)
         dto.setId(entity.getId());
 
-        // 2. 단순 필드 복사
+        // 2. 단순 필드 복사 (공통 항목)
         dto.setCompany(entity.getCompany());
         dto.setLogDate(entity.getLogDate());
         dto.setWeather(entity.getWeather());
@@ -99,17 +103,21 @@ public class ConstructionLogService {
         dto.setManager(entity.getManager());
         dto.setSignature(entity.getSignature());
 
-        // 3. [수정] JSON String -> List 변환
+        // 3. 단순 필드 복사 (안전일지 고유 항목)
+        dto.setRiskFactors(entity.getRiskFactors());
+        dto.setCorrectiveActions(entity.getCorrectiveActions());
+
+        // 4. [수정] JSON String -> List 변환
         dto.setWorkerNames(convertJsonStringToListString(entity.getWorkerNames()));
         dto.setPhotos(convertJsonStringToListString(entity.getPhotos()));
         dto.setAttachments(convertJsonStringToListString(entity.getAttachments()));
         dto.setEquipment(convertJsonStringToEquipmentList(entity.getEquipment()));
-        dto.setMaterials(convertJsonStringToMaterialList(entity.getMaterials()));
+        dto.setSafetyChecklist(convertJsonStringToSafetyCheckList(entity.getSafetyChecklist())); // 안전 체크리스트 변환
 
         return dto;
     }
 
-    // --- 4. JSON 변환 헬퍼 메서드 ---
+    // --- 5. JSON 변환 헬퍼 메서드 ---
 
     /**
      * (공통) List 객체를 JSON 문자열로 변환
@@ -148,16 +156,14 @@ public class ConstructionLogService {
     }
 
     /**
-     * (개별) JSON 문자열을 List<MaterialDto>로 변환
+     * (개별) JSON 문자열을 List<SafetyCheckItemDto>로 변환
      */
-    private List<MaterialDto> convertJsonStringToMaterialList(String json) {
+    private List<SafetyCheckItemDto> convertJsonStringToSafetyCheckList(String json) {
         if (json == null || json.isEmpty()) return null;
         try {
-            return objectMapper.readValue(json, new TypeReference<List<MaterialDto>>() {});
+            return objectMapper.readValue(json, new TypeReference<List<SafetyCheckItemDto>>() {});
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("JSON 변환 오류 (String -> List<MaterialDto>)", e);
+            throw new RuntimeException("JSON 변환 오류 (String -> List<SafetyCheckItemDto>)", e);
         }
     }
-
-    // (참고) 개별 변환 헬퍼 메서드(convertEquipmentDtoToEntity 등)는 더 이상 필요 없으므로 삭제했습니다.
 }
