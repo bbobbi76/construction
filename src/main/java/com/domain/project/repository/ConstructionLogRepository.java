@@ -4,7 +4,7 @@ import com.domain.project.entity.ConstructionLog;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository // 이 인터페이스가 Spring의 Repository(DB 저장소)임을 선언
+@Repository
 public interface ConstructionLogRepository extends JpaRepository<ConstructionLog, Long> {
     /**
      * JpaRepository<ConstructionLog, Long> 를 상속(extends)받는 것만으로
