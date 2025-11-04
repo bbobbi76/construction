@@ -66,6 +66,7 @@ public class ConstructionLogService {
         entity.setRemarks(dto.getRemarks());
         entity.setManager(dto.getManager());
         entity.setSignature(dto.getSignature());
+        entity.setAuthor(dto.getAuthor());
 
         // 2. [수정] List -> JSON String 변환
         entity.setWorkerNames(convertListToJsonString(dto.getWorkerNames()));
@@ -98,6 +99,7 @@ public class ConstructionLogService {
         dto.setRemarks(entity.getRemarks());
         dto.setManager(entity.getManager());
         dto.setSignature(entity.getSignature());
+        dto.setAuthor(entity.getAuthor());
 
         // 3. [수정] JSON String -> List 변환
         dto.setWorkerNames(convertJsonStringToListString(entity.getWorkerNames()));

@@ -1,10 +1,77 @@
-<!-- src/main/resources/static/index.html -->
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-    <title>Home</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>메인 화면</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f7f6;
+        }
+        .container {
+            text-align: center;
+        }
+        h1 {
+            font-weight: 600;
+            color: #333;
+        }
+        .menu-container {
+            display: flex; /* 네모칸을 가로로 나란히 배치 */
+            gap: 30px; /* 네모칸 사이의 간격 */
+            margin-top: 40px;
+        }
+        .menu-box {
+            /* (1) 네모칸 디자인 */
+            width: 250px;
+            padding: 40px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+
+            /* (2) 링크 스타일 제거 */
+            text-decoration: none; /* 밑줄 제거 */
+            color: #333; /* 글자색 검은색 */
+
+            /* (3) 부드러운 효과 */
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .menu-box:hover {
+            /* 마우스를 올리면 살짝 커지고 그림자 진하게 */
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        .menu-box h2 {
+            margin-top: 0;
+            color: #007bff;
+        }
+        .menu-box p {
+            color: #555;
+            font-size: 0.9rem;
+        }
+    </style>
 </head>
 <body>
-<h1>Welcome to Spring Boot!</h1>
+<div class="container">
+    <h1></h1>
+
+    <div class="menu-container">
+        <a href="/construction-log.html" class="menu-box">
+            <h2>공사일지</h2>
+            <p>공사 현황, 자재, 장비 투입을 기록합니다.</p>
+        </a>
+
+        <a href="/safety-log.html" class="menu-box">
+            <h2>안전일지</h2>
+            <p>일일 안전 점검 및 위험 요소를 기록합니다.</p>
+        </a>
+    </div>
+</div>
 </body>
 </html>

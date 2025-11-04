@@ -66,6 +66,7 @@ public class SafetyLogService {
         entity.setRemarks(dto.getRemarks());
         entity.setManager(dto.getManager());
         entity.setSignature(dto.getSignature());
+        entity.setAuthor(dto.getAuthor());
 
         // 2. 단순 필드 복사 (안전일지 고유 항목)
         entity.setRiskFactors(dto.getRiskFactors());
@@ -102,6 +103,7 @@ public class SafetyLogService {
         dto.setRemarks(entity.getRemarks());
         dto.setManager(entity.getManager());
         dto.setSignature(entity.getSignature());
+        dto.setAuthor(entity.getAuthor());
 
         // 3. 단순 필드 복사 (안전일지 고유 항목)
         dto.setRiskFactors(entity.getRiskFactors());

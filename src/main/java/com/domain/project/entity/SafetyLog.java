@@ -44,6 +44,9 @@ public class SafetyLog {
     @Lob
     private String attachments; // DTO의 List<String> -> JSON 문자열로 변환하여 저장
 
+    //  '작성자' 필드
+    private String author;
+
     // --- 안전일지 고유 항목 ---
     @Lob
     private String riskFactors;
@@ -181,5 +184,13 @@ public class SafetyLog {
     }
     public void setSafetyChecklist(String safetyChecklist) {
         this.safetyChecklist = safetyChecklist;
+    }
+
+    // (작성자)author의 Getter/Setter
+    public String getAuthor() {
+        return author;
+    }
+    public void setAuthor(String author) {
+        this.author = author;
     }
 }

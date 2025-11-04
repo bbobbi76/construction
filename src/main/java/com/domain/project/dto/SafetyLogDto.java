@@ -24,6 +24,7 @@ public class SafetyLogDto {
     private List<String> photos;
     private String signature;
     private List<String> attachments;
+    private String author; //작성자
 
     // --- 안전일지 고유 항목 ---
     private String riskFactors;
@@ -159,4 +160,11 @@ public class SafetyLogDto {
     public void setSafetyChecklist(List<SafetyCheckItemDto> safetyChecklist) {
         this.safetyChecklist = safetyChecklist;
     }
+    public String getAuthor() {
+        return author;
+    }
+    public void setAuthor(String author) {
+        this.author = author; //작성자 getter/setter
+    }
+
 }

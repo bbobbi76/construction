@@ -23,6 +23,7 @@ public class ConstructionLogDto {
     private List<String> photos;
     private String signature;
     private List<String> attachments;
+    private String author; //작성자
 
     // --- 공사일지 고유 항목 ---
     private List<MaterialDto> materials; // (별도 파일의 public MaterialDto를 참조)
@@ -141,5 +142,11 @@ public class ConstructionLogDto {
     }
     public void setMaterials(List<MaterialDto> materials) {
         this.materials = materials;
+    }
+    public String getAuthor() {
+        return author;
+    }
+    public void setAuthor(String author) {
+        this.author = author;  //author getter,setter
     }
 }

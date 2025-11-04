@@ -45,6 +45,8 @@ public class ConstructionLog {
     @Lob
     private String attachments; // DTO의 List<String> -> JSON 문자열로 변환하여 저장
 
+    private String author; //작성자
+
     // --- 공사일지 고유 항목 ---
     @Lob
     private String materials; // DTO의 List<MaterialDto> -> JSON 문자열로 변환하여 저장
@@ -163,5 +165,12 @@ public class ConstructionLog {
     }
     public void setMaterials(String materials) {
         this.materials = materials;
+    }
+    // (작성자) author의 Getter/Setter
+    public String getAuthor() {
+        return author;
+    }
+    public void setAuthor(String author) {
+        this.author = author;
     }
 }
