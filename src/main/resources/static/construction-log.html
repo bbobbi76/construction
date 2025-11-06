@@ -4,174 +4,131 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>공사일지 작성</title>
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; margin: 20px; background-color: #f9f9f9; }
-        .container { max-width: 1000px; margin: 0 auto; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        h1 { text-align: center; }
-        .form-section { margin-bottom: 25px; border-bottom: 1px solid #eee; padding-bottom: 25px; }
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
-        .form-group { display: flex; flex-direction: column; }
-        label { font-weight: 600; margin-bottom: 5px; }
-        input[type="text"], input[type="date"], input[type="number"], textarea, input[type="file"] {
-            padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem;
-        }
-        input[type="file"] { background-color: #fcfcfc; }
-        textarea { min-height: 80px; resize: vertical; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-        th { background-color: #f4f4f4; }
-        .row-add-btn { background-color: #28a745; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; margin-top: 10px; }
-        .row-del-btn { background-color: #dc3545; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; }
-        .submit-btn { background-color: #007bff; color: white; border: none; padding: 15px 20px; font-size: 1.1rem; border-radius: 4px; cursor: pointer; width: 100%; }
-
-        /* 🚨 [신규] 서명 패드(Signature Pad) 스타일 */
-        .signature-pad-wrapper {
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            position: relative;
-            height: 200px;
-        }
-        canvas {
-            width: 100%;
-            height: 100%;
-            border-radius: 4px;
-        }
-        .signature-pad-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .sig-btn {
-            padding: 8px 12px;
-            border: 1px solid #007bff;
-            background-color: #fff;
-            color: #007bff;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .sig-btn.clear {
-            border-color: #dc3545;
-            color: #dc3545;
-        }
-    </style>
+    <link rel="stylesheet" href="/common.css">
 </head>
 <body>
 <div class="container">
+
+    <header class="page-header">
+        <a href="/index.html" class="btn-main">&larr; 메인으로</a>
+        <a href="/log-list.html" class="btn-list">목록보기 &rarr;</a>
+    </header>
+
     <h1>공사일지 작성</h1>
 
-    <div class="form-section">
-        <h2>기본 정보</h2>
-        <div class="form-grid">
-            <div class="form-group">
-                <label for="company">회사명</label>
-                <input type="text" id="company" value="(주)행복건설">
-            </div>
-            <div class="form-group">
-                <label for="logDate">작업일</label>
-                <input type="date" id="logDate">
-            </div>
-            <div class="form-group">
-                <label for="weather">날씨</label>
-                <input type="text" id="weather" placeholder="맑음 (최고 20°C / 최저 10°C)">
-            </div>
-            <div class="form-group">
-                <label for="location">현장 위치</label>
-                <input type="text" id="location" value="춘천시 OO 아파트 신축 현장">
+    <form id="constructionLogForm">
+
+        <div class="form-section">
+            <h2>기본 정보</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="company">회사명</label>
+                    <input type="text" id="company" value="(주)행복건설">
+                </div>
+                <div class="form-group">
+                    <label for="logDate">작업일</label>
+                    <input type="date" id="logDate" required> </div>
+                <div class="form-group">
+                    <label for="weather">날씨</label>
+                    <input type="text" id="weather" placeholder="맑음 (최고 20°C / 최저 10°C)">
+                </div>
+                <div class="form-group">
+                    <label for="location">현장 위치</label>
+                    <input type="text" id="location" value="춘천시 OO 아파트 신축 현장" required> </div>
             </div>
         </div>
-    </div>
 
-    <div class="form-section">
-        <h2>담당자 정보</h2>
-        <div class="form-grid">
-            <div class="form-group">
-                <label for="author">작성자</label>
-                <input type="text" id="author" placeholder="김인턴">
-            </div>
-            <div class="form-group">
-                <label for="manager">현장 관리자</label>
-                <input type="text" id="manager" placeholder="최반장">
-            </div>
-        </div>
-    </div>
-
-    <div class="form-section">
-        <h2>작업 현황</h2>
-        <div class="form-grid">
-            <div class="form-group">
-                <label for="workType">공종</label>
-                <input type="text" id="workType" placeholder="철근콘크리트 공사">
-            </div>
-            <div class="form-group">
-                <label for="workersCount">총 인원</label>
-                <input type="number" id="workersCount" value="0">
+        <div class="form-section">
+            <h2>담당자 정보</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="author">작성자</label>
+                    <input type="text" id="author" placeholder="김인턴">
+                </div>
+                <div class="form-group">
+                    <label for="manager">현장 관리자</label>
+                    <input type="text" id="manager" placeholder="최반장">
+                </div>
             </div>
         </div>
-        <div class="form-group" style="margin-top: 15px;">
-            <label for="workerNames">투입 인원 (,)로 구분)</label>
-            <textarea id="workerNames" placeholder="김철수, 이영희, 박현장"></textarea>
-        </div>
-        <div class="form-group" style="margin-top: 15px;">
-            <label for="workDetails">주요 작업 내용</label>
-            <textarea id="workDetails" placeholder="오전: ...&#10;오후: ..."></textarea>
-        </div>
-    </div>
 
-    <div class="form-section">
-        <h2>투입 장비 및 자재</h2>
-        <table id="equipmentTable">
-            <thead><tr><th>장비명</th><th>수량</th></tr></thead>
-            <tbody id="equipmentTbody"></tbody>
-        </table>
-        <button type="button" class="row-add-btn" onclick="addEquipmentRow()">추가</button>
-
-        <table id="materialTable" style="margin-top: 20px;">
-            <thead><tr><th>자재명</th><th>수량 (단위 포함)</th></tr></thead>
-            <tbody id="materialTbody"></tbody>
-        </table>
-        <button type="button" class="row-add-btn" onclick="addMaterialRow()">추가</button>
-    </div>
-
-    <div class="form-section">
-        <h2>파일 및 서명</h2>
-
-        <div class="form-group">
-            <label for="photosInput">현장 사진 </label>
-            <input type="file" id="photosInput" multiple accept="image/*" capture="environment">
-            /* 모바일에서는 클릭시 사진촬영or갤러리에서 선택이 뜸*/
-        </div>
-
-        <div class="form-group" style="margin-top: 15px;">
-            <label for="attachmentsInput">첨부 파일 (도면, 문서 등)</label>
-            <input type="file" id="attachmentsInput" multiple>
-        </div>
-
-        <div class="form-group" style="margin-top: 15px;">
-            <label>관리자 서명</label>
-            <div class="signature-pad-wrapper">
-                <canvas id="signature-pad"></canvas>
-            </div>
-            <div class="signature-pad-actions">
-                <button type="button" class="sig-btn" id="sig-save-btn">저장</button>
-                <button type="button" class="sig-btn clear" id="sig-clear-btn">다시 하기</button>
+        <div class="form-section">
+            <h2>작업 현황</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="workType">공종</label>
+                    <input type="text" id="workType" placeholder="철근콘크리트 공사">
+                </div>
+                <div class="form-group">
+                    <label for="workersCount">총 인원</label>
+                    <input type="number" id="workersCount" value="0">
+                </div>
             </div>
             <div class="form-group" style="margin-top: 15px;">
-                <label for="signatureInput">서명 파일 업로드</label>
-                <input type="file" id="signatureInput" accept="image/*">
+                <label for="workerNames">투입 인원 (,)로 구분)</label>
+                <textarea id="workerNames" placeholder="김철수, 이영희, 박현장"></textarea>
+            </div>
+            <div class="form-group" style="margin-top: 15px;">
+                <label for="workDetails">주요 작업 내용</label>
+                <textarea id="workDetails" placeholder="오전: ...&#10;오후: ..."></textarea>
             </div>
         </div>
 
-        <div class="form-group" style="margin-top: 15px;">
-            <label for="remarks">특이사항</label>
-            <textarea id="remarks" placeholder="오후 3시 TBM 실시, 특이사항 없음"></textarea>
-        </div>
-    </div>
+        <div class="form-section">
+            <h2>투입 장비 및 자재</h2>
+            <table id="equipmentTable">
+                <thead><tr><th>장비명</th><th>수량</th><th style="width: 50px;">삭제</th></tr></thead>
+                <tbody id="equipmentTbody"></tbody>
+            </table>
+            <button type="button" class="row-add-btn" onclick="addEquipmentRow()">장비 추가</button>
 
-    <button type="button" class="submit-btn" id="finalSubmitBtn">공사일지 최종 저장</button>
+            <table id="materialTable" style="margin-top: 20px;">
+                <thead><tr><th>자재명</th><th>수량 (단위 포함)</th><th style="width: 50px;">삭제</th></tr></thead>
+                <tbody id="materialTbody"></tbody>
+            </table>
+            <button type="button" class="row-add-btn" onclick="addMaterialRow()">자재 추가</button>
+        </div>
+
+        <div class="form-section">
+            <h2>파일 및 서명</h2>
+
+            <div class="form-group">
+                <label for="photosInput">현장 사진 </label>
+                <input type="file" id="photosInput" multiple accept="image/*" capture="environment">
+            </div>
+
+            <div class="form-group" style="margin-top: 15px;">
+                <label for="attachmentsInput">첨부 파일 (도면, 문서 등)</label>
+                <input type="file" id="attachmentsInput" multiple>
+            </div>
+
+            <div class="form-group" style="margin-top: 15px;">
+                <label>관리자 서명</label>
+                <div class="signature-pad-wrapper">
+                    <canvas id="signature-pad"></canvas>
+                </div>
+                <div class="signature-pad-actions">
+                    <button type="button" class="sig-btn" id="sig-save-btn">저장</button>
+                    <button type="button" class="sig-btn clear" id="sig-clear-btn">다시 하기</button>
+                </div>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label for="signatureInput">서명 파일 업로드</label>
+                    <input type="file" id="signatureInput" accept="image/*">
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-top: 15px;">
+                <label for="remarks">특이사항</label>
+                <textarea id="remarks" placeholder="오후 3시 TBM 실시, 특이사항 없음"></textarea>
+            </div>
+        </div>
+
+        <button type="button" class="submit-btn" id="finalSubmitBtn">공사일지 최종 저장</button>
+
+    </form>
 </div>
 
 <script src="/js/signature_pad.umd.min.js"></script>
-
 <script src="/js/construction.js" defer></script>
 </body>
 </html>

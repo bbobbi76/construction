@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List; // List import 추가
+
 @RestController // 2. "이 클래스는 REST API의 요청을 받는 Controller입니다."
 @RequestMapping("/api/construction-log") // 3. "이 컨트롤러의 모든 API 주소는 /api/construction-log로 시작합니다."
 public class ConstructionLogController {
@@ -47,5 +49,17 @@ public class ConstructionLogController {
 
         // 8. HTTP 200 OK 상태 코드와 함께 조회된 DTO를 반환
         return ResponseEntity.ok(dto);
+    }
+
+    /**
+     *  [GET] /api/construction-log
+     * 공사일지 "전체 목록" 조회
+     * (log-list.js의 loadConstructionLogs()가 호출함)
+     */
+    @GetMapping
+    public ResponseEntity<List<ConstructionLogDto>> getAllLogs() {
+        // Service에 방금 추가한 findAllLogs() 메서드 호출
+        List<ConstructionLogDto> dtos = constructionLogService.findAllLogs();
+        return ResponseEntity.ok(dtos);
     }
 }

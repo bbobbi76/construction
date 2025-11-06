@@ -12,7 +12,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.List; //  List import 추가
+import java.util.stream.Collectors; //  Collectors import 추가
 
 @Service
 @Transactional(readOnly = true)
@@ -46,11 +47,26 @@ public class ConstructionLogService {
         return entityToDto(entity);
     }
 
+    /**
+     *  3. 공사일지 "전체" 조회 (GET)
+     * (log-list.js의 '로딩 실패' 해결용)
+     */
+    @Transactional(readOnly = true)
+    public List<ConstructionLogDto> findAllLogs() {
+        // 1. DB에서 모든 Entity 조회
+        List<ConstructionLog> entities = constructionLogRepository.findAll();
+
+        // 2. Entity 리스트 -> DTO 리스트 변환 (기존 entityToDto 헬퍼 재활용)
+        return entities.stream()
+                .map(this::entityToDto) //
+                .collect(Collectors.toList());
+    }
+
     // --- (핵심) DTO <-> Entity 변환 헬퍼 메서드 ---
 
     /**
      * DTO -> Entity 변환 (DB 저장용)
-     * [수정됨] List 객체들을 JSON 문자열로 변환하여 Entity의 String 필드에 저장합니다.
+     *  List 객체들을 JSON 문자열로 변환하여 Entity의 String 필드에 저장합니다.
      */
     private ConstructionLog dtoToEntity(ConstructionLogDto dto) {
         ConstructionLog entity = new ConstructionLog();
@@ -68,7 +84,7 @@ public class ConstructionLogService {
         entity.setSignature(dto.getSignature());
         entity.setAuthor(dto.getAuthor());
 
-        // 2. [수정] List -> JSON String 변환
+        // 2.  List -> JSON String 변환
         entity.setWorkerNames(convertListToJsonString(dto.getWorkerNames()));
         entity.setPhotos(convertListToJsonString(dto.getPhotos()));
         entity.setAttachments(convertListToJsonString(dto.getAttachments()));
@@ -80,7 +96,7 @@ public class ConstructionLogService {
 
     /**
      * Entity -> DTO 변환 (클라이언트 반환용)
-     * [수정됨] Entity의 JSON 문자열 필드를 List 객체로 변환하여 DTO에 저장합니다.
+     *  Entity의 JSON 문자열 필드를 List 객체로 변환하여 DTO에 저장합니다.
      */
     private ConstructionLogDto entityToDto(ConstructionLog entity) {
         ConstructionLogDto dto = new ConstructionLogDto();
@@ -160,6 +176,4 @@ public class ConstructionLogService {
             throw new RuntimeException("JSON 변환 오류 (String -> List<MaterialDto>)", e);
         }
     }
-
-
 }

@@ -45,7 +45,21 @@ public class SafetyLogService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 안전일지가 없습니다. id=" + id));
         return entityToDto(entity);
     }
+    /**
+     *  3. 안전일지 "전체" 조회 (GET)
+     *
+     */
+    @Transactional(readOnly = true)
+    public List<SafetyLogDto> findAllLogs() {
+        // 1. DB에서 모든 SafetyLog Entity를 조회
+        List<SafetyLog> entities = safetyLogRepository.findAll();
 
+        // 2. Entity 리스트를 DTO 리스트로 변환
+        return entities.stream()
+                .map(this::entityToDto) // 이미 만들어둔 entityToDto 헬퍼 재활용
+                .toList(); // Java 17+
+        // .collect(Collectors.toList()); // Java 8-16
+    }
     // --- (핵심) DTO <-> Entity 변환 헬퍼 메서드 ---
 
     /**
