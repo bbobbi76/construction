@@ -217,7 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error('Error:', error);
-            alert('[Step 2] 저장/수정 중 네트워크 오류가 발생했습니다.');
+            alert(' 저장/수정 중 네트워크 오류가 발생했습니다.');
         } finally {
             submitBtn.disabled = false;
 

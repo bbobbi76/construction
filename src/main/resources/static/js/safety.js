@@ -213,11 +213,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.location.href = '/log-list.html'; // 목록으로 이동
             } else {
                 const errorText = await response.text();
-                alert(`[Step 2] 최종 ${method} 실패: ${errorText} (백엔드 5주차 기능 필요)`);
+                alert(` 최종 ${method} 실패: ${errorText} (수정 기능 필요)`);
             }
         } catch (error) {
             console.error('Error:', error);
-            alert('[Step 2] 저장/수정 중 네트워크 오류가 발생했습니다.');
+            alert(' 저장/수정 중 네트워크 오류가 발생했습니다.');
         } finally {
             submitBtn.disabled = false;
 
