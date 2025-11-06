@@ -1,43 +1,30 @@
-/** 공사일지 폼(HTML)과 백엔드 API를 연동하는 스크립트
-
+/**
+ * [4주차] 안전일지 폼(HTML)과 백엔드 API를 연동하는 스크립트
+ * (construction.js의 '2-Step' 파일 업로드 로직을 기반으로 함)
+ * (안전일지 고유 항목 + 공사일지 공통 항목 모두 포함)
+ */
 
 // --- 1. 서명 패드(SignaturePad) 초기화 ---
+// (construction.js와 100% 동일한 코드)
 const canvas = document.getElementById('signature-pad');
 const signaturePad = new SignaturePad(canvas, {
-    backgroundColor: 'rgb(255, 255, 255)' // 서명 배경을 흰색으로
+    backgroundColor: 'rgb(255, 255, 255)'
 });
 
-// 좌표 밀림 수정 캔버스 리사이즈 함수 ---
 /**
  * (헬퍼) CSS 크기와 캔버스 픽셀 크기를 동기화하는 함수
- * (이걸 안하면 좌표가 밀려서 옆에 그려짐)
  */
 function resizeCanvas() {
-    // 1. (고해상도 대비) 디바이스 픽셀 비율
     const ratio =  Math.max(window.devicePixelRatio || 1, 1);
-
-    // 2. CSS에서 계산된 '겉모습' 크기를 읽어옴
     const cssWidth = canvas.offsetWidth;
     const cssHeight = canvas.offsetHeight;
-
-    // 3. 캔버스의 '실제 픽셀(Attribute)' 크기를 CSS 크기에 맞게 설정
     canvas.width = cssWidth * ratio;
     canvas.height = cssHeight * ratio;
-
-    // 4. 캔버스 2D 컨텍스트도 비율에 맞게 스케일링
     canvas.getContext("2d").scale(ratio, ratio);
-
-    // 5.  리사이즈 후, 서명 패드에 저장된 이전 그림을 초기화
     signaturePad.clear();
 }
-
-// 1. 페이지 로드 시 1회 실행 (초기화)
-resizeCanvas();
-
-// 2. 브라우저 창 크기가 바뀔 때마다 캔버스 크기 재조정
-window.addEventListener("resize", resizeCanvas);
-// 🚨 --- 여기까지 추가 ---
-
+resizeCanvas(); // 페이지 로드 시 1회 실행
+window.addEventListener("resize", resizeCanvas); // 창 크기 변경 시 실행
 
 // "다시 그리기" 버튼
 document.getElementById('sig-clear-btn').addEventListener('click', () => {
@@ -50,11 +37,8 @@ document.getElementById('sig-save-btn').addEventListener('click', () => {
     if (signaturePad.isEmpty()) {
         alert("먼저 서명을 해주세요.");
     } else {
-        // 서명(Base64)을 PNG 파일 객체(Blob)로 변환
         const dataURL = signaturePad.toDataURL("image/png");
         const blob = dataURLToBlob(dataURL);
-
-        // 가짜 파일명(signature.png)을 가진 File 객체로 생성
         signatureFile = new File([blob], "signature.png", { type: "image/png" });
         alert("저장되었습니다.");
     }
@@ -74,56 +58,50 @@ function dataURLToBlob(dataURL) {
     }
     return new Blob([uInt8Array], { type: contentType });
 }
+// --- 서명 패드 코드 끝 ---
 
 
 // --- 2. "최종 저장" 버튼 이벤트 ---
 document.getElementById('finalSubmitBtn').addEventListener('click', saveLog);
 
 
+// --- 3. 동적 테이블 관리 ---
+
 /**
  * (공통) 테이블 행 삭제 함수
+ * (construction.js와 100% 동일한 코드)
  * @param {HTMLButtonElement} button - 클릭된 '삭제' 버튼
  */
 function removeRow(button) {
-    // 버튼의 가장 가까운 부모 <tr>을 찾아서 삭제
     button.closest('tr').remove();
 }
 
 /**
- * "장비 행 추가" 버튼
+ * [고유 항목] "지적사항 행 추가" 버튼
+ * (safety-log.html의 onclick="addSafetyIssueRow()"가 호출)
  */
-function addEquipmentRow() {
-    const tbody = document.getElementById('equipmentTbody');
+function addSafetyIssueRow() {
+    const tbody = document.getElementById('safetyIssueTbody');
     const newRow = tbody.insertRow(); // 새 <tr> 생성
+
+    // safety-log.html의 테이블 구조에 맞게 input 클래스명 지정
     newRow.innerHTML = `
-        <td><input type="text" class="eq-name" placeholder="장비명"></td>
-        <td><input type="number" class="eq-count" value="1"></td>
+        <td><input type="text" class="issue-desc" placeholder="지적 사항"></td>
+        <td><input type="text" class="issue-action" placeholder="조치 내용"></td>
+        <td><input type="text" class="issue-manager" placeholder="담당자"></td>
         <td><button type="button" class="row-del-btn" onclick="removeRow(this)">삭제</button></td>
     `;
 }
-
-/**
- * "자재 행 추가" 버튼
- */
-function addMaterialRow() {
-    const tbody = document.getElementById('materialTbody');
-    const newRow = tbody.insertRow(); // 새 <tr> 생성
-    newRow.innerHTML = `
-        <td><input type="text" class="mat-name" placeholder="자재명"></td>
-        <td><input type="text" class="mat-quantity" placeholder="수량 (예: 5톤)"></td>
-        <td><button type="button" class="row-del-btn" onclick="removeRow(this)">삭제</button></td>
-    `;
-}
+// --- (construction.js의 addEquipmentRow, addMaterialRow는 여기서 삭제) ---
 
 
 /**
- * [2단계]에서 만든 파일 업로드 API(/api/files/upload)를 호출하는 함수
- * @param {File} file - 업로드할 파일 객체
- * @returns {Promise<String>} - 서버에 저장된 파일 경로 (예: "/uploads/uuid_photo.jpg")
+ * [공통] 파일 업로드 API(/api/files/upload)를 호출하는 함수
+ * (construction.js와 100% 동일한 코드)
  */
 async function uploadFile(file) {
     const formData = new FormData();
-    formData.append('file', file); // Controller의 @RequestParam("file")과 키 일치
+    formData.append('file', file);
 
     console.log(`파일 업로드 시도: ${file.name}`);
 
@@ -139,12 +117,12 @@ async function uploadFile(file) {
 
         const result = await response.json();
         console.log(`파일 업로드 성공: ${result.filePath}`);
-        return result.filePath; // {"filePath": "..."} 에서 경로 값만 반환
+        return result.filePath;
 
     } catch (error) {
         console.error('File Upload Error:', error);
         alert(`Error: ${file.name} 업로드 중 오류 발생.`);
-        throw error; // 오류를 상위로 전파
+        throw error;
     }
 }
 
@@ -155,121 +133,132 @@ async function uploadFile(file) {
  */
 async function saveLog() {
 
-    // (로딩 중 버튼 비활성화 - 선택 사항)
     const submitBtn = document.getElementById('finalSubmitBtn');
     submitBtn.disabled = true;
+    // [텍스트 변경]
     submitBtn.textContent = '저장 중... (1/2)';
 
     // --- (Step 1) 파일 업로드 및 경로 확보 ---
+    // (construction.js와 100% 동일한 로직. HTML의 ID가 동일하기 때문)
 
     const uploadedFilePaths = {
         photos: [],
         attachments: [],
-        signature: "" // 서명은 파일 1개
+        signature: ""
     };
 
     try {
-        // (A) 현장 사진 (photosInput) 업로드 (여러 개)
+        // (A) 현장 사진 (AI 분석용)
         const photoFiles = document.getElementById('photosInput').files;
         for (const file of photoFiles) {
             const path = await uploadFile(file);
             uploadedFilePaths.photos.push(path);
         }
 
-        // (B) 첨부 파일 (attachmentsInput) 업로드 (여러 개)
+        // (B) 첨부 파일 (안전교육일지 등)
         const attachmentFiles = document.getElementById('attachmentsInput').files;
         for (const file of attachmentFiles) {
             const path = await uploadFile(file);
             uploadedFilePaths.attachments.push(path);
         }
 
-        // (C) 서명 (signatureInput 또는 signaturePad) 업로드 (1개)
+        // (C) 서명
         const sigFileInput = document.getElementById('signatureInput');
 
         if (sigFileInput.files.length > 0) {
-            // (C-1) 서명 '파일'을 업로드한 경우
             const path = await uploadFile(sigFileInput.files[0]);
             uploadedFilePaths.signature = path;
         } else if (signatureFile) {
-            // (C-2) '그림판'에서 "서명 저장" 버튼을 눌러둔 경우
             const path = await uploadFile(signatureFile);
             uploadedFilePaths.signature = path;
         } else if (!signaturePad.isEmpty()) {
-            // (C-3) '그림판'에 그림만 그리고 "서명 저장"을 안 누른 경우
-            alert("저장 버튼을 먼저 눌러주세요.");
+            alert("서명 '저장' 버튼을 먼저 눌러주세요.");
             throw new Error("서명 파일 변환 필요");
         }
 
     } catch (error) {
-        // (Step 1) 파일 업로드 중 1개라도 실패하면, (Step 2) JSON 저장을 시도하지 않음
         alert("파일 업로드에 실패했습니다. 저장을 중단합니다.");
         submitBtn.disabled = false;
-        submitBtn.textContent = '공사일지 최종 저장';
-        return; // 함수 종료
+        // [텍스트 변경]
+        submitBtn.textContent = '안전일지 최종 저장';
+        return;
     }
 
 
     // --- (Step 2) '글자(Text)' 데이터 + (Step 1)의 '경로'를 JSON으로 조립 ---
+    // 🚨 (construction.js 항목 + safety.js 항목 모두 취합) 🚨
 
     submitBtn.textContent = '저장 중... (2/2)';
 
-    // (A) List<String> 타입 변환 헬퍼 (콤마로 분리)
+    // (A) List<String> 타입 변환 헬퍼 (공통)
     const parseListString = (rawString) => {
         if (!rawString) return [];
         return rawString.split(',').map(s => s.trim()).filter(s => s);
     };
 
-    // (B) 장비 테이블(List<EquipmentDto>) 읽기
-    const equipmentList = [];
-    document.querySelectorAll('#equipmentTbody tr').forEach(row => {
-        const name = row.querySelector('.eq-name').value;
-        const count = parseInt(row.querySelector('.eq-count').value) || 0;
-        if (name) { equipmentList.push({ name: name, count: count }); }
+    // [고유 항목] (B) 체크리스트 (List<String>) 읽기
+    const checklistItems = [];
+    document.querySelectorAll('input[name="checklist"]:checked').forEach(chk => {
+        checklistItems.push(chk.value);
     });
 
-    // (C) 자재 테이블(List<MaterialDto>) 읽기
-    const materialList = [];
-    document.querySelectorAll('#materialTbody tr').forEach(row => {
-        const name = row.querySelector('.mat-name').value;
-        const quantity = row.querySelector('.mat-quantity').value;
-        if (name) { materialList.push({ name: name, quantity: quantity }); }
-    });
+    // [고유 항목] (C) 지적사항 테이블(List<SafetyIssueDto>) 읽기
+    const safetyIssues = [];
+    document.querySelectorAll('#safetyIssueTbody tr').forEach(row => {
+        const description = row.querySelector('.issue-desc').value;
+        const action = row.querySelector('.issue-action').value;
+        const manager = row.querySelector('.issue-manager').value;
 
-    // (D) 최종 JSON 객체 (B안 'author' + 파일 경로 포함)
+        if (description) { // 지적 사항이 입력된 경우에만 리스트에 추가
+            safetyIssues.push({
+                description: description,
+                action: action,
+                manager: manager
+            });
+        }
+    });
+    // --- (construction.js의 equipmentList, materialList는 여기서 삭제) ---
+
+
+    // (D) 최종 JSON 객체
     const logData = {
+        // 1. 기본 정보 (공통)
         company: document.getElementById('company').value,
-        logDate: document.getElementById('logDate').value,
+        inspectionDate: document.getElementById('inspectionDate').value, // (ID 주의: logDate -> inspectionDate)
         weather: document.getElementById('weather').value,
         location: document.getElementById('location').value,
 
-        author: document.getElementById('author').value, // 🚨 [B안] 작성자
-        manager: document.getElementById('manager').value, // 🚨 [B안] 관리자
+        // 2. 담당자 정보 (공통)
+        author: document.getElementById('author').value,
+        manager: document.getElementById('manager').value,
 
+        // 3. 작업 현황 (공통)
         workType: document.getElementById('workType').value,
         workersCount: parseInt(document.getElementById('workersCount').value) || 0,
         workDetails: document.getElementById('workDetails').value,
-        remarks: document.getElementById('remarks').value,
-
-        // 글자(콤마) -> List<String>
         workerNames: parseListString(document.getElementById('workerNames').value),
 
-        // 테이블 -> List<DTO>
-        equipment: equipmentList,
-        materials: materialList,
+        // 4. 안전 점검 (고유)
+        checklistItems: checklistItems, // (B)에서 수집
+        riskFactors: document.getElementById('riskFactors').value,
 
-        // 🚨  (Step 1)에서 업로드하고 받아온 '경로'들
-        photos: uploadedFilePaths.photos,
+        // 5. 지적 사항 (고유)
+        safetyIssues: safetyIssues, // (C)에서 수집
+
+        // 6. 파일 및 서명 (공통)
+        remarks: document.getElementById('remarks').value,
+        photos: uploadedFilePaths.photos, // (AI 분석 대상)
         attachments: uploadedFilePaths.attachments,
         signature: uploadedFilePaths.signature
     };
 
-    // (디버깅)
     console.log('JSON으로 변환될 최종 데이터 (Step 2):', JSON.stringify(logData, null, 2));
 
 
     // --- (Step 2) 2주차에 만든 API로 '최종 JSON' 전송 ---
     try {
-        const response = await fetch('/api/construction-log', {
+        // 🚨 [API 엔드포인트 변경]
+        const response = await fetch('/api/safety-logs', { // (construction-log -> safety-logs)
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -279,8 +268,9 @@ async function saveLog() {
 
         if (response.ok) {
             const savedData = await response.json();
-            alert('최종 저장 성공! (ID: ' + savedData.id + ')');
-            window.location.reload(); // 성공 시 페이지 새로고침
+            // [텍스트 변경]
+            alert('안전일지 저장 성공! (ID: ' + savedData.id + ')');
+            window.location.reload();
         } else {
             const errorText = await response.text();
             alert(`[Step 2] 최종 저장 실패: ${errorText}`);
@@ -289,8 +279,8 @@ async function saveLog() {
         console.error('Error:', error);
         alert('[Step 2] 저장 중 네트워크 오류가 발생했습니다.');
     } finally {
-        // 성공하든 실패하든 버튼 활성화
         submitBtn.disabled = false;
-        submitBtn.textContent = '공사일지 최종 저장';
+        // [텍스트 변경]
+        submitBtn.textContent = '안전일지 최종 저장';
     }
 }

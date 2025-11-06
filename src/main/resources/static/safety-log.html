@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>안전일지 작성</title>
+
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; margin: 20px; background-color: #f9f9f9; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        h1 { text-align: center; }
+        .form-section { margin-bottom: 25px; border-bottom: 1px solid #eee; padding-bottom: 25px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
+        .form-group { display: flex; flex-direction: column; }
+        label { font-weight: 600; margin-bottom: 5px; }
+
+        /* * 🚨 [오타 수정] 🚨
+         * 1. font-size를 공통으로 묶고,
+         * 2. input[typeD="file"] -> input[type="file"]로 수정합니다.
+         */
+        input[type="text"], input[type="date"], input[type="number"], textarea, input[type="file"], input[type="checkbox"] {
+            font-size: 1rem;
+        }
+
+        input[type="text"], input[type="date"], input[type="number"], textarea, input[type="file"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        /* (위에서 수정했으므로, 공사일지의 원본 스타일대로 합쳐도 됩니다) */
+        /*
+        input[type="text"], input[type="date"], input[type="number"], textarea, input[type="file"] {
+            padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem;
+        }
+        */
+
+        input[type="file"] { background-color: #fcfcfc; }
+        textarea { min-height: 80px; resize: vertical; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #f4f4f4; }
+        .row-add-btn { background-color: #28a745; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; margin-top: 10px; }
+        .row-del-btn { background-color: #dc3545; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; }
+        .submit-btn { background-color: #007bff; color: white; border: none; padding: 15px 20px; font-size: 1.1rem; border-radius: 4px; cursor: pointer; width: 100%; }
+
+        /* 서명 패드 (동일) */
+        .signature-pad-wrapper { border: 1px solid #ccc; border-radius: 4px; position: relative; height: 200px; }
+        canvas { width: 100%; height: 100%; border-radius: 4px; }
+        .signature-pad-actions { display: flex; gap: 10px; margin-top: 10px; }
+        .sig-btn { padding: 8px 12px; border: 1px solid #007bff; background-color: #fff; color: #007bff; border-radius: 4px; cursor: pointer; }
+        .sig-btn.clear { border-color: #dc3545; color: #dc3545; }
+
+        /* 체크박스 스타일 (동일) */
+        .checkbox-group { display: flex; flex-direction: column; gap: 8px; }
+        .checkbox-group div { display: flex; align-items: center; }
+        .checkbox-group label { margin-bottom: 0; margin-left: 8px; font-weight: normal; }
+        .checkbox-group input[type="checkbox"] { width: 1.2em; height: 1.2em; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>안전일지 작성</h1>
+
+    <div class="form-section">
+        <h2>기본 정보</h2>
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="company">회사명</label>
+                <input type="text" id="company" value="(주)행복건설">
+            </div>
+            <div class="form-group">
+                <label for="inspectionDate">작업일 (점검일)</label>
+                <input type="date" id="inspectionDate">
+            </div>
+            <div class="form-group">
+                <label for="weather">날씨</label>
+                <input type="text" id="weather" placeholder="맑음 (최고 20°C / 최저 10°C)">
+            </div>
+            <div class="form-group">
+                <label for="location">현장 위치</label>
+                <input type="text" id="location" value="춘천시 OO 아파트 신축 현장">
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <h2>담당자 정보</h2>
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="author">작성자 (안전관리자)</label>
+                <input type="text" id="author" placeholder="김안전">
+            </div>
+            <div class="form-group">
+                <label for="manager">확인자 (현장소장)</label>
+                <input type="text" id="manager" placeholder="박소장">
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <h2>작업 현황</h2>
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="workType">공종</label>
+                <input type="text" id="workType" placeholder="철근콘크리트 공사">
+            </div>
+            <div class="form-group">
+                <label for="workersCount">총 인원</label>
+                <input type="number" id="workersCount" value="0">
+            </div>
+        </div>
+        <div class="form-group" style="margin-top: 15px;">
+            <label for="workerNames">투입 인원 (,)로 구분)</label>
+            <textarea id="workerNames" placeholder="김철수, 이영희, 박현장"></textarea>
+        </div>
+        <div class="form-group" style="margin-top: 15px;">
+            <label for="workDetails">주요 작업 내용</label>
+            <textarea id="workDetails" placeholder="안전일지에도 작업 맥락이 필요할 때 기재"></textarea>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <h2>안전 점검 현황</h2>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>안전 점검 체크리스트</label>
+                <div class="checkbox-group">
+                    <div>
+                        <input type="checkbox" id="chk1" name="checklist" value="개인보호구(안전모 등) 착용">
+                        <label for="chk1">개인보호구(안전모 등) 착용</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="chk2" name="checklist" value="추락 방지(안전대 등) 조치">
+                        <label for="chk2">추락 방지(안전대 등) 조치</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="chk3" name="checklist" value="작업장 정리정돈 상태">
+                        <label for="chk3">작업장 정리정돈 상태</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="chk4" name="checklist" value="자재 야적 상태 (붕괴 위험)">
+                        <label for="chk4">자재 야적 상태 (붕괴 위험)</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="riskFactors">주요 위험 요소 (AI 분석)</label>
+                <textarea id="riskFactors" placeholder="[AI가 사진을 보고 자동 분석할 영역]"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <h2>지적 및 조치사항</h2>
+        <table id="safetyIssueTable">
+            <thead>
+            <tr>
+                <th>지적 사항 (위험 요소)</th>
+                <th>조치 내용</th>
+                <th>담당자</th>
+                <th style="width: 50px;">삭제</th>
+            </tr>
+            </thead>
+            <tbody id="safetyIssueTbody">
+            </tbody>
+        </table>
+        <button type="button" class="row-add-btn" onclick="addSafetyIssueRow()">조치사항 추가</button>
+    </div>
+
+
+    <div class="form-section">
+        <h2>파일 및 서명</h2>
+
+        <div class="form-group">
+            <label for="photosInput">현장 사진 (AI 분석용)</label>
+            <input type="file" id="photosInput" multiple accept="image/*" capture="environment">
+            /* 모바일에서는 클릭시 사진촬영or갤러리에서 선택이 뜸*/
+        </div>
+
+        <div class="form-group" style="margin-top: 15px;">
+            <label for="attachmentsInput">첨부 파일 (안전교육일지 등)</label>
+            <input type="file" id="attachmentsInput" multiple>
+        </div>
+
+        <div class="form-group" style="margin-top: 15px;">
+            <label>확인자 서명</label>
+            <div class="signature-pad-wrapper">
+                <canvas id="signature-pad"></canvas>
+            </div>
+            <div class="signature-pad-actions">
+                <button type="button" class="sig-btn" id="sig-save-btn">저장</button>
+                <button type="button" class="sig-btn clear" id="sig-clear-btn">다시 하기</button>
+            </div>
+            <div class="form-group" style="margin-top: 15px;">
+                <label for="signatureInput">서명 파일 업로드</label>
+                <input type="file" id="signatureInput" accept="image/*">
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 15px;">
+            <label for="remarks">기타 특이사항</label>
+            <textarea id="remarks" placeholder="오전 9시 TBM 실시, 근로자 안전 교육 완료."></textarea>
+        </div>
+    </div>
+
+    <button type="button" class="submit-btn" id="finalSubmitBtn">안전일지 최종 저장</button>
+</div>
+
+<script src="/js/signature_pad.umd.min.js"></script>
+
+<script src="/js/safety.js" defer></script>
+</body>
+</html>
