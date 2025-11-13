@@ -53,4 +53,25 @@ public class SafetyLogController {
         List<SafetyLogDto> dtos = safetyLogService.findAllLogs();
         return ResponseEntity.ok(dtos);
     }
+
+    /**
+     * [PUT] /api/safety-log/{id}
+     * 안전일지 1건 수정
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<SafetyLogDto> updateLog(@PathVariable Long id, @RequestBody SafetyLogDto dto) {
+        SafetyLogDto updatedDto = safetyLogService.updateLog(id, dto);
+        return ResponseEntity.ok(updatedDto);
+    }
+
+    /**
+     * [DELETE] /api/safety-log/{id}
+     * 안전일지 1건 삭제
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteLog(@PathVariable Long id) {
+        safetyLogService.deleteLog(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }

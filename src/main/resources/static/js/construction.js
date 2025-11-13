@@ -1,4 +1,3 @@
-
 // 현재 수정 중인 ID (null이면 신규 작성)
 let currentEditingId = null;
 
@@ -142,14 +141,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 uploadedFilePaths.signature = await uploadFile(sigFileInput.files[0]);
             } else if (signatureFile) { // (DOM 리스너 내부의 변수)
                 uploadedFilePaths.signature = await uploadFile(signatureFile);
-            } else if (!signaturePad.isEmpty()) {
+            } else if (!signaturePad.isEmpty() && !currentEditingId) { // 수정 모드일 땐 서명 강제 안함
                 alert("서명 '저장' 버튼을 먼저 눌러주세요.");
                 throw new Error("서명 파일 변환 필요");
             }
         } catch (error) {
             alert("파일 업로드에 실패했습니다. 저장을 중단합니다.");
             submitBtn.disabled = false;
-            submitBtn.textContent = '공사일지 최종 저장';
+            submitBtn.textContent = currentEditingId ? ` 공사일지 수정하기` : '공사일지 최종 저장';
             return;
         }
 
@@ -199,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (currentEditingId) {
                 url = `/api/construction-log/${currentEditingId}`;
-                method = 'PUT'; // (수정 기능 필요)
+                method = 'PUT'; // 수정 (PUT)
             }
 
             const response = await fetch(url, {
@@ -213,14 +212,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.location.href = '/log-list.html'; // 목록으로 이동
             } else {
                 const errorText = await response.text();
-                alert(` ${method} 실패: ${errorText} (수정 기능 필요)`);
+                // (수정) 실패 알림창 정리
+                alert(`${method === 'POST' ? '저장' : '수정'} 실패: ${errorText}`);
             }
         } catch (error) {
             console.error('Error:', error);
             alert(' 저장/수정 중 네트워크 오류가 발생했습니다.');
         } finally {
             submitBtn.disabled = false;
-
+            submitBtn.textContent = currentEditingId ? `(ID: ${currentEditingId}) 공사일지 수정하기` : '공사일지 최종 저장';
         }
     }
 
@@ -249,6 +249,8 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('workerNames').value = (dto.workerNames || []).join(', ');
             document.getElementById('remarks').value = dto.remarks;
 
+            // TODO: 서명, 사진, 첨부파일 '미리보기' 로직 (현재는 생략됨)
+
             // (테이블 "보여주기")
             const eqTbody = document.getElementById('equipmentTbody');
             eqTbody.innerHTML = ''; // 기존 행 삭제
@@ -263,7 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // ('수정 모드'로 변경)
             currentEditingId = id;
-            document.getElementById('finalSubmitBtn').textContent = `(ID: ${id}) 공사일지 수정하기`;
+            document.getElementById('finalSubmitBtn').textContent = ` 공사일지 수정하기`;
 
         } catch (error) {
             alert('데이터를 불러오는 데 실패했습니다: ' + error.message);

@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', () => {
     loadConstructionLogs();
     loadSafetyLogs();
@@ -17,20 +16,22 @@ function loadConstructionLogs() {
         .catch(error => listDiv.innerHTML = '<p>공사일지 로딩 실패</p>');
 }
 
-// (viewConstructionLog 함수는  createCardListHtml 안에서 직접 링크 생성)
-
 async function deleteConstructionLog(id) {
-    if (!confirm(`[공사일지 ID: ${id}] 정말 삭제하시겠습니까?`)) return;
+    if (!confirm(` 정말 삭제하시겠습니까?`)) return;
 
-    // 삭제 기능이 아직 없으므로, alert만 띄움
-    alert('삭제 실패 (백엔드  기능 필요)');
-
-    // const response = await fetch(`/api/construction-log/${id}`, { method: 'DELETE' });
-    // if (response.ok) {
-    //     loadConstructionLogs();
-    // } else {
-    //     alert('삭제 실패 (백엔드 기능 필요)');
-    // }
+    try {
+        const response = await fetch(`/api/construction-log/${id}`, { method: 'DELETE' });
+        if (response.ok) {
+            alert('삭제되었습니다.');
+            loadConstructionLogs(); // 목록 새로고침
+        } else {
+            const errorText = await response.text();
+            alert(`삭제 실패: ${errorText}`);
+        }
+    } catch (error) {
+        console.error('Delete Error:', error);
+        alert('삭제 중 오류가 발생했습니다.');
+    }
 }
 
 // 안전일지 (Safety)
@@ -46,20 +47,22 @@ function loadSafetyLogs() {
         .catch(error => listDiv.innerHTML = '<p>안전일지 로딩 실패</p>');
 }
 
-// (viewSafetyLog 함수는 이제 createCardListHtml 안에서 직접 링크 생성)
-
 async function deleteSafetyLog(id) {
-    if (!confirm(`[안전일지 ID: ${id}] 정말 삭제하시겠습니까?`)) return;
+    if (!confirm(` 정말 삭제하시겠습니까?`)) return;
 
-    // (삭제 기능이 없으므로, alert만 띄움)
-    alert('삭제 실패 (백엔드 5주차 기능 필요)');
-
-    // const response = await fetch(`/api/safety-log/${id}`, { method: 'DELETE' });
-    // if (response.ok) {
-    //     loadSafetyLogs();
-    // } else {
-    //     alert('삭제 실패 (삭제 기능 필요)');
-    // }
+    try {
+        const response = await fetch(`/api/safety-log/${id}`, { method: 'DELETE' });
+        if (response.ok) {
+            alert('삭제되었습니다.');
+            loadSafetyLogs(); // 목록 새로고침
+        } else {
+            const errorText = await response.text();
+            alert(`삭제 실패: ${errorText}`);
+        }
+    } catch (error) {
+        console.error('Delete Error:', error);
+        alert('삭제 중 오류가 발생했습니다.');
+    }
 }
 
 

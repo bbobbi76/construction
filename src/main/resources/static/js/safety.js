@@ -132,14 +132,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 uploadedFilePaths.signature = await uploadFile(sigFileInput.files[0]);
             } else if (signatureFile) { // (DOM 리스너 내부의 변수)
                 uploadedFilePaths.signature = await uploadFile(signatureFile);
-            } else if (!signaturePad.isEmpty()) {
+            } else if (!signaturePad.isEmpty() && !currentEditingId) { // 수정 모드일 땐 서명 강제 안함
                 alert("서명 '저장' 버튼을 먼저 눌러주세요.");
                 throw new Error("서명 파일 변환 필요");
             }
         } catch (error) {
             alert("파일 업로드에 실패했습니다. 저장을 중단합니다.");
             submitBtn.disabled = false;
-            submitBtn.textContent = '안전일지 최종 저장';
+            submitBtn.textContent = currentEditingId ? `(ID: ${currentEditingId}) 안전일지 수정하기` : '안전일지 최종 저장';
             return;
         }
 
@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (currentEditingId) {
                 // '수정' 모드일 경우 (ID가 저장되어 있음)
                 url = `/api/safety-log/${currentEditingId}`;
-                method = 'PUT'; // 구현 예정
+                method = 'PUT'; // 수정 (PUT)
             }
 
             const response = await fetch(url, {
@@ -213,14 +213,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.location.href = '/log-list.html'; // 목록으로 이동
             } else {
                 const errorText = await response.text();
-                alert(` 최종 ${method} 실패: ${errorText} (수정 기능 필요)`);
+                // (수정) 실패 알림창 정리
+                alert(`${method === 'POST' ? '저장' : '수정'} 실패: ${errorText}`);
             }
         } catch (error) {
             console.error('Error:', error);
             alert(' 저장/수정 중 네트워크 오류가 발생했습니다.');
         } finally {
             submitBtn.disabled = false;
-
+            submitBtn.textContent = currentEditingId ? `(ID: ${currentEditingId}) 안전일지 수정하기` : '안전일지 최종 저장';
         }
     } // saveLog 끝
 
@@ -275,7 +276,7 @@ async function loadLogDataForEdit(id) {
 
         // ('수정 모드'로 변경)
         currentEditingId = id;
-        document.getElementById('finalSubmitBtn').textContent = `(ID: ${id}) 안전일지 수정하기`;
+        document.getElementById('finalSubmitBtn').textContent = ` 안전일지 수정하기`;
 
     } catch (error) {
         alert('데이터를 불러오는 데 실패했습니다: ' + error.message);

@@ -62,4 +62,25 @@ public class ConstructionLogController {
         List<ConstructionLogDto> dtos = constructionLogService.findAllLogs();
         return ResponseEntity.ok(dtos);
     }
+
+    /**
+     * [PUT] /api/construction-log/{id}
+     * 공사일지 1건 수정
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<ConstructionLogDto> updateLog(@PathVariable Long id, @RequestBody ConstructionLogDto dto) {
+        ConstructionLogDto updatedDto = constructionLogService.updateLog(id, dto);
+        return ResponseEntity.ok(updatedDto);
+    }
+
+    /**
+     * [DELETE] /api/construction-log/{id}
+     * 공사일지 1건 삭제
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteLog(@PathVariable Long id) {
+        constructionLogService.deleteLog(id);
+        return ResponseEntity.noContent().build(); // 성공 시 204 No Content 응답
+    }
+
 }

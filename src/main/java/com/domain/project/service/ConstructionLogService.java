@@ -1,6 +1,5 @@
 package com.domain.project.service;
 
-// 1. 필요한 import 문들 (Jackson 라이브러리 추가)
 import com.domain.project.entity.ConstructionLog;
 import com.domain.project.dto.ConstructionLogDto;
 import com.domain.project.dto.EquipmentDto;
@@ -12,17 +11,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List; //  List import 추가
-import java.util.stream.Collectors; //  Collectors import 추가
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
 public class ConstructionLogService {
 
     private final ConstructionLogRepository constructionLogRepository;
-    private final ObjectMapper objectMapper; // 2. JSON 변환을 위한 ObjectMapper 주입
+    private final ObjectMapper objectMapper;
 
-    // 3. 생성자 주입 (Repository와 ObjectMapper)
     public ConstructionLogService(ConstructionLogRepository constructionLogRepository, ObjectMapper objectMapper) {
         this.constructionLogRepository = constructionLogRepository;
         this.objectMapper = objectMapper;
@@ -48,29 +46,55 @@ public class ConstructionLogService {
     }
 
     /**
-     *  3. 공사일지 "전체" 조회 (GET)
-     * (log-list.js의 '로딩 실패' 해결용)
+     * 3. 공사일지 "전체" 조회 (GET)
      */
     @Transactional(readOnly = true)
     public List<ConstructionLogDto> findAllLogs() {
-        // 1. DB에서 모든 Entity 조회
         List<ConstructionLog> entities = constructionLogRepository.findAll();
-
-        // 2. Entity 리스트 -> DTO 리스트 변환 (기존 entityToDto 헬퍼 재활용)
         return entities.stream()
-                .map(this::entityToDto) //
+                .map(this::entityToDto)
                 .collect(Collectors.toList());
     }
+
+    /**
+     * 4. 공사일지 수정 (PUT) - [리팩토링]
+     */
+    @Transactional
+    public ConstructionLogDto updateLog(Long id, ConstructionLogDto dto) {
+        // 1. ID로 기존 Entity 조회
+        ConstructionLog entity = constructionLogRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 공사일지가 없습니다. id=" + id));
+
+        // 2. [리팩토링] 헬퍼 메서드를 호출하여 DTO의 내용으로 Entity 업데이트
+        updateEntityFromDto(entity, dto);
+
+        // 3. DB에 저장 (JPA 변경 감지)
+        ConstructionLog updatedEntity = constructionLogRepository.save(entity);
+
+        // 4. DTO로 변환하여 반환
+        return entityToDto(updatedEntity);
+    }
+
+    /**
+     * 5. 공사일지 삭제 (DELETE)
+     */
+    @Transactional
+    public void deleteLog(Long id) {
+        if (!constructionLogRepository.existsById(id)) {
+            throw new IllegalArgumentException("해당 ID의 공사일지가 없습니다. id=" + id);
+        }
+        constructionLogRepository.deleteById(id);
+    }
+
 
     // --- (핵심) DTO <-> Entity 변환 헬퍼 메서드 ---
 
     /**
-     * DTO -> Entity 변환 (DB 저장용)
-     *  List 객체들을 JSON 문자열로 변환하여 Entity의 String 필드에 저장합니다.
+     * [신규] DTO의 데이터를 Entity 객체로 복사하는 헬퍼 메서드 (중복 제거용)
+     * @param entity (신규 또는 기존 Entity)
+     * @param dto (데이터를 담고 있는 DTO)
      */
-    private ConstructionLog dtoToEntity(ConstructionLogDto dto) {
-        ConstructionLog entity = new ConstructionLog();
-
+    private void updateEntityFromDto(ConstructionLog entity, ConstructionLogDto dto) {
         // 1. 단순 필드 복사
         entity.setCompany(dto.getCompany());
         entity.setLogDate(dto.getLogDate());
@@ -84,27 +108,31 @@ public class ConstructionLogService {
         entity.setSignature(dto.getSignature());
         entity.setAuthor(dto.getAuthor());
 
-        // 2.  List -> JSON String 변환
+        // 2. List -> JSON String 변환
         entity.setWorkerNames(convertListToJsonString(dto.getWorkerNames()));
         entity.setPhotos(convertListToJsonString(dto.getPhotos()));
         entity.setAttachments(convertListToJsonString(dto.getAttachments()));
         entity.setEquipment(convertListToJsonString(dto.getEquipment()));
         entity.setMaterials(convertListToJsonString(dto.getMaterials()));
+    }
 
+    /**
+     * DTO -> Entity 변환 (DB 저장용) - [리팩토링]
+     */
+    private ConstructionLog dtoToEntity(ConstructionLogDto dto) {
+        ConstructionLog entity = new ConstructionLog();
+        // [리팩토링] 헬퍼 메서드 호출
+        updateEntityFromDto(entity, dto);
         return entity;
     }
 
     /**
      * Entity -> DTO 변환 (클라이언트 반환용)
-     *  Entity의 JSON 문자열 필드를 List 객체로 변환하여 DTO에 저장합니다.
      */
     private ConstructionLogDto entityToDto(ConstructionLog entity) {
         ConstructionLogDto dto = new ConstructionLogDto();
 
-        // 1. ID 값 세팅 (필수!)
         dto.setId(entity.getId());
-
-        // 2. 단순 필드 복사
         dto.setCompany(entity.getCompany());
         dto.setLogDate(entity.getLogDate());
         dto.setWeather(entity.getWeather());
@@ -117,7 +145,7 @@ public class ConstructionLogService {
         dto.setSignature(entity.getSignature());
         dto.setAuthor(entity.getAuthor());
 
-        // 3. [수정] JSON String -> List 변환
+        // JSON String -> List 변환
         dto.setWorkerNames(convertJsonStringToListString(entity.getWorkerNames()));
         dto.setPhotos(convertJsonStringToListString(entity.getPhotos()));
         dto.setAttachments(convertJsonStringToListString(entity.getAttachments()));
@@ -127,11 +155,8 @@ public class ConstructionLogService {
         return dto;
     }
 
-    // --- 4. JSON 변환 헬퍼 메서드 ---
+    // --- 4. JSON 변환 헬퍼 메서드 (변경 없음) ---
 
-    /**
-     * (공통) List 객체를 JSON 문자열로 변환
-     */
     private String convertListToJsonString(Object list) {
         if (list == null) return null;
         try {
@@ -141,9 +166,6 @@ public class ConstructionLogService {
         }
     }
 
-    /**
-     * (개별) JSON 문자열을 List<String>으로 변환
-     */
     private List<String> convertJsonStringToListString(String json) {
         if (json == null || json.isEmpty()) return null;
         try {
@@ -153,9 +175,6 @@ public class ConstructionLogService {
         }
     }
 
-    /**
-     * (개별) JSON 문자열을 List<EquipmentDto>로 변환
-     */
     private List<EquipmentDto> convertJsonStringToEquipmentList(String json) {
         if (json == null || json.isEmpty()) return null;
         try {
@@ -165,9 +184,6 @@ public class ConstructionLogService {
         }
     }
 
-    /**
-     * (개별) JSON 문자열을 List<MaterialDto>로 변환
-     */
     private List<MaterialDto> convertJsonStringToMaterialList(String json) {
         if (json == null || json.isEmpty()) return null;
         try {

@@ -1,6 +1,5 @@
 package com.domain.project.service;
 
-// 1. 필요한 import 문들 (DTO, Entity, Repository 및 JSON 변환 도구)
 import com.domain.project.entity.SafetyLog;
 import com.domain.project.dto.EquipmentDto;
 import com.domain.project.dto.SafetyCheckItemDto;
@@ -19,9 +18,8 @@ import java.util.List;
 public class SafetyLogService {
 
     private final SafetyLogRepository safetyLogRepository;
-    private final ObjectMapper objectMapper; // JSON 변환을 위한 ObjectMapper
+    private final ObjectMapper objectMapper;
 
-    // 2. 생성자 주입 (Repository와 ObjectMapper)
     public SafetyLogService(SafetyLogRepository safetyLogRepository, ObjectMapper objectMapper) {
         this.safetyLogRepository = safetyLogRepository;
         this.objectMapper = objectMapper;
@@ -45,30 +43,53 @@ public class SafetyLogService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 안전일지가 없습니다. id=" + id));
         return entityToDto(entity);
     }
+
     /**
-     *  3. 안전일지 "전체" 조회 (GET)
-     *
+     * 3. 안전일지 "전체" 조회 (GET)
      */
     @Transactional(readOnly = true)
     public List<SafetyLogDto> findAllLogs() {
-        // 1. DB에서 모든 SafetyLog Entity를 조회
         List<SafetyLog> entities = safetyLogRepository.findAll();
-
-        // 2. Entity 리스트를 DTO 리스트로 변환
         return entities.stream()
-                .map(this::entityToDto) // 이미 만들어둔 entityToDto 헬퍼 재활용
-                .toList(); // Java 17+
-        // .collect(Collectors.toList()); // Java 8-16
+                .map(this::entityToDto)
+                .toList();
     }
+
+    /**
+     * 4. 안전일지 수정 (PUT) - [리팩토링]
+     */
+    @Transactional
+    public SafetyLogDto updateLog(Long id, SafetyLogDto dto) {
+        SafetyLog entity = safetyLogRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 안전일지가 없습니다. id=" + id));
+
+        // [리팩토링] 헬퍼 메서드를 호출하여 DTO의 내용으로 Entity 업데이트
+        updateEntityFromDto(entity, dto);
+
+        SafetyLog updatedEntity = safetyLogRepository.save(entity);
+        return entityToDto(updatedEntity);
+    }
+
+    /**
+     * 5. 안전일지 삭제 (DELETE)
+     */
+    @Transactional
+    public void deleteLog(Long id) {
+        if (!safetyLogRepository.existsById(id)) {
+            throw new IllegalArgumentException("해당 ID의 안전일지가 없습니다. id=" + id);
+        }
+        safetyLogRepository.deleteById(id);
+    }
+
+
     // --- (핵심) DTO <-> Entity 변환 헬퍼 메서드 ---
 
     /**
-     * DTO -> Entity 변환 (DB 저장용)
-     *  List 객체들을 JSON 문자열로 변환하여 Entity의 String 필드에 저장합니다.
+     * [신규] DTO의 데이터를 Entity 객체로 복사하는 헬퍼 메서드 (중복 제거용)
+     * @param entity (신규 또는 기존 Entity)
+     * @param dto (데이터를 담고 있는 DTO)
      */
-    private SafetyLog dtoToEntity(SafetyLogDto dto) {
-        SafetyLog entity = new SafetyLog();
-
+    private void updateEntityFromDto(SafetyLog entity, SafetyLogDto dto) {
         // 1. 단순 필드 복사 (공통 항목)
         entity.setCompany(dto.getCompany());
         entity.setLogDate(dto.getLogDate());
@@ -91,22 +112,27 @@ public class SafetyLogService {
         entity.setPhotos(convertListToJsonString(dto.getPhotos()));
         entity.setAttachments(convertListToJsonString(dto.getAttachments()));
         entity.setEquipment(convertListToJsonString(dto.getEquipment()));
-        entity.setSafetyChecklist(convertListToJsonString(dto.getSafetyChecklist())); // 안전 체크리스트 변환
+        entity.setSafetyChecklist(convertListToJsonString(dto.getSafetyChecklist()));
+    }
 
+
+    /**
+     * DTO -> Entity 변환 (DB 저장용) - [리팩토링]
+     */
+    private SafetyLog dtoToEntity(SafetyLogDto dto) {
+        SafetyLog entity = new SafetyLog();
+        // [리팩토링] 헬퍼 메서드 호출
+        updateEntityFromDto(entity, dto);
         return entity;
     }
 
     /**
      * Entity -> DTO 변환 (클라이언트 반환용)
-     *  Entity의 JSON 문자열 필드를 List 객체로 변환하여 DTO에 저장합니다.
      */
     private SafetyLogDto entityToDto(SafetyLog entity) {
         SafetyLogDto dto = new SafetyLogDto();
 
-        // 1. ID 값 세팅
         dto.setId(entity.getId());
-
-        // 2. 단순 필드 복사 (공통 항목)
         dto.setCompany(entity.getCompany());
         dto.setLogDate(entity.getLogDate());
         dto.setWeather(entity.getWeather());
@@ -118,8 +144,6 @@ public class SafetyLogService {
         dto.setManager(entity.getManager());
         dto.setSignature(entity.getSignature());
         dto.setAuthor(entity.getAuthor());
-
-        // 3. 단순 필드 복사 (안전일지 고유 항목)
         dto.setRiskFactors(entity.getRiskFactors());
         dto.setCorrectiveActions(entity.getCorrectiveActions());
 
@@ -128,16 +152,13 @@ public class SafetyLogService {
         dto.setPhotos(convertJsonStringToListString(entity.getPhotos()));
         dto.setAttachments(convertJsonStringToListString(entity.getAttachments()));
         dto.setEquipment(convertJsonStringToEquipmentList(entity.getEquipment()));
-        dto.setSafetyChecklist(convertJsonStringToSafetyCheckList(entity.getSafetyChecklist())); // 안전 체크리스트 변환
+        dto.setSafetyChecklist(convertJsonStringToSafetyCheckList(entity.getSafetyChecklist()));
 
         return dto;
     }
 
-    // --- 5. JSON 변환 헬퍼 메서드 ---
+    // --- 5. JSON 변환 헬퍼 메서드 (변경 없음) ---
 
-    /**
-     * (공통) List 객체를 JSON 문자열로 변환
-     */
     private String convertListToJsonString(Object list) {
         if (list == null) return null;
         try {
@@ -147,9 +168,6 @@ public class SafetyLogService {
         }
     }
 
-    /**
-     * (개별) JSON 문자열을 List<String>으로 변환
-     */
     private List<String> convertJsonStringToListString(String json) {
         if (json == null || json.isEmpty()) return null;
         try {
@@ -159,9 +177,6 @@ public class SafetyLogService {
         }
     }
 
-    /**
-     * (개별) JSON 문자열을 List<EquipmentDto>로 변환
-     */
     private List<EquipmentDto> convertJsonStringToEquipmentList(String json) {
         if (json == null || json.isEmpty()) return null;
         try {
@@ -171,9 +186,6 @@ public class SafetyLogService {
         }
     }
 
-    /**
-     * (개별) JSON 문자열을 List<SafetyCheckItemDto>로 변환
-     */
     private List<SafetyCheckItemDto> convertJsonStringToSafetyCheckList(String json) {
         if (json == null || json.isEmpty()) return null;
         try {

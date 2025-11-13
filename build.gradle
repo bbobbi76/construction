@@ -1,16 +1,20 @@
 plugins {
-    id 'java'
-    id 'org.springframework.boot' version '3.5.7'
-    id 'io.spring.dependency-management' version '1.1.7'
+    id 'java' // 자바 플러그인
+    id 'org.springframework.boot' version '3.2.5' // (버전은 예시입니다)
+    id 'io.spring.dependency-management' version '1.1.4'
 }
 
-group = 'com.domain'
-version = '0.0.1-SNAPSHOT'
-description = 'project'
+group = 'com.domain' // 본인 프로젝트에 맞게 수정
+version = '0.0.1-SNAPSHOT' // 본인 프로젝트에 맞게 수정
 
 java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+    sourceCompatibility = '17' // (자바 17 버전 사용)
+}
+
+// 롬복을 위한 필수 설정
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
     }
 }
 
@@ -18,26 +22,23 @@ repositories {
     mavenCentral()
 }
 
+// 의존성(라이브러리) 목록
 dependencies {
+    // 1. 웹 (Controller 등)
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-
-    /**
-     * JPA (Java Persistence API) 라이브러리 입니다.
-     * 우리가 만든 Java 클래스(Entity)를 보고
-     * 데이터베이스 테이블(H2)과 자동으로 연결(매핑)해주는 '번역기' 역할을 합니다.
-     * (예: ConstructionLog.java  <--->  CONSTRUCTION_LOG 테이블)
-     */
+    // 2. 데이터베이스 (JPA, Entity 등)
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
-    /**
-     * H2 데이터베이스 드라이버입니다.
-     * Spring Boot가 H2 DB와 실제로 통신할 수 있게 해주는 '연결 프로그램'입니다.
-     * runtimeOnly = 이 프로그램은 앱이 '실행될 때(runtime)'만 필요하다는 뜻입니다.
-     */
+    // 3. H2 데이터베이스 (개발용)
     runtimeOnly 'com.h2database:h2'
+
+    // 4. 롬복 (Lombok) - 이게 추가된 부분입니다.
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // 5. 기본 테스트 라이브러리
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 tasks.named('test') {

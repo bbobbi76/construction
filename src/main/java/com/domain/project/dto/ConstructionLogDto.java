@@ -1,11 +1,12 @@
 package com.domain.project.dto;
 
+import lombok.Data;
 import java.util.List;
 
 /**
- * 공사일지 (ConstructionLog) 메인 DTO 클래스.
- *  별도의 public 파일로 분리된 EquipmentDto와 MaterialDto를 참조합니다.
+ * 공사일지 (ConstructionLog) 메인 DTO 클래스 (Lombok 적용)
  */
+@Data
 public class ConstructionLogDto {
     private Long id; // DB에서 생성된 고유 ID
     // --- 공통 항목 ---
@@ -19,134 +20,14 @@ public class ConstructionLogDto {
     private List<String> workerNames;
     private String remarks;
     private String manager;
-    private List<EquipmentDto> equipment; // (별도 파일의 public EquipmentDto를 참조)
+    private List<EquipmentDto> equipment;
     private List<String> photos;
     private String signature;
     private List<String> attachments;
     private String author; //작성자
 
     // --- 공사일지 고유 항목 ---
-    private List<MaterialDto> materials; // (별도 파일의 public MaterialDto를 참조)
+    private List<MaterialDto> materials;
 
-
-    // --- Getter 및 Setter (전체) ---
-
-    //  id의 Getter/Setter
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getCompany() {
-        return company;
-    }
-    public void setCompany(String company) {
-        this.company = company;
-    }
-
-    public String getLogDate() {
-        return logDate;
-    }
-    public void setLogDate(String logDate) {
-        this.logDate = logDate;
-    }
-
-    public String getWeather() {
-        return weather;
-    }
-    public void setWeather(String weather) {
-        this.weather = weather;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public String getWorkDetails() {
-        return workDetails;
-    }
-    public void setWorkDetails(String workDetails) {
-        this.workDetails = workDetails;
-    }
-
-    public String getWorkType() {
-        return workType;
-    }
-    public void setWorkType(String workType) {
-        this.workType = workType;
-    }
-
-    public int getWorkersCount() {
-        return workersCount;
-    }
-    public void setWorkersCount(int workersCount) {
-        this.workersCount = workersCount;
-    }
-
-    public List<String> getWorkerNames() {
-        return workerNames;
-    }
-    public void setWorkerNames(List<String> workerNames) {
-        this.workerNames = workerNames;
-    }
-
-    public String getRemarks() {
-        return remarks;
-    }
-    public void setRemarks(String remarks) {
-        this.remarks = remarks;
-    }
-
-    public String getManager() {
-        return manager;
-    }
-    public void setManager(String manager) {
-        this.manager = manager;
-    }
-
-    public List<EquipmentDto> getEquipment() {
-        return equipment;
-    }
-    public void setEquipment(List<EquipmentDto> equipment) {
-        this.equipment = equipment;
-    }
-
-    public List<String> getPhotos() {
-        return photos;
-    }
-    public void setPhotos(List<String> photos) {
-        this.photos = photos;
-    }
-
-    public String getSignature() {
-        return signature;
-    }
-    public void setSignature(String signature) {
-        this.signature = signature;
-    }
-
-    public List<String> getAttachments() {
-        return attachments;
-    }
-    public void setAttachments(List<String> attachments) {
-        this.attachments = attachments;
-    }
-
-    public List<MaterialDto> getMaterials() {
-        return materials;
-    }
-    public void setMaterials(List<MaterialDto> materials) {
-        this.materials = materials;
-    }
-    public String getAuthor() {
-        return author;
-    }
-    public void setAuthor(String author) {
-        this.author = author;  //author getter,setter
-    }
+    // Getter/Setter 모두 @Data가 자동으로 생성
 }
