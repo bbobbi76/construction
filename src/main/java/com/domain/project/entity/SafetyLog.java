@@ -1,53 +1,39 @@
 package com.domain.project.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Getter // Lombok: 모든 필드의 Getter 자동 생성
-@Setter // Lombok: 모든 필드의 Setter 자동 생성
+@Getter @Setter
 public class SafetyLog {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // --- 공통 항목 ---
+    // 공통
     private String company;
     private String logDate;
     private String weather;
     private String location;
-    @Lob
-    private String workDetails;
+    @Lob private String workDetails;
     private String workType;
     private int workersCount;
-    @Lob
-    private String workerNames; // JSON 문자열
-    @Lob
-    private String remarks;
+    @Lob private String workerNames;
+    @Lob private String remarks;
     private String manager;
-    @Lob
-    private String equipment; // JSON 문자열
-    @Lob
-    private String photos; // JSON 문자열
-    @Lob
-    private String signature;
-    @Lob
-    private String attachments; // JSON 문자열
+    @Lob private String equipment;
+    @Lob private String photos;
+    @Lob private String signature;
+    @Lob private String attachments;
+
+    // ★ 로그인 (작성자)
     private String author;
 
-    // --- 안전일지 고유 항목 ---
-    @Lob
-    private String riskFactors;
-    @Lob
-    private String correctiveActions;
-    @Lob
-    private String safetyChecklist; // JSON 문자열
-
-    // 모든 Getter/Setter가 Lombok에 의해 자동 생성됨
+    // ★ AI 분석
+    @Lob private String safetyChecklist;
+    @Lob private String potentialRiskFactors;
+    @Lob private String countermeasures;
+    @Lob private String majorRiskFactors;
+    @Lob private String followUpPhoto;
+    @Lob private String correctiveActions;
 }

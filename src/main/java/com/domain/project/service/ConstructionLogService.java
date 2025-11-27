@@ -26,58 +26,41 @@ public class ConstructionLogService {
         this.objectMapper = objectMapper;
     }
 
-    /**
-     * 1. 공사일지 저장 (POST)
-     */
+    // 1. 저장 (로그인 ID 포함)
     @Transactional
-    public ConstructionLogDto createLog(ConstructionLogDto dto) {
+    public ConstructionLogDto createLog(ConstructionLogDto dto, String username) {
         ConstructionLog entity = dtoToEntity(dto);
+        entity.setAuthor(username); // 작성자 저장
         ConstructionLog savedEntity = constructionLogRepository.save(entity);
         return entityToDto(savedEntity);
     }
 
-    /**
-     * 2. 공사일지 단건 조회 (GET)
-     */
+    // 2. 단건 조회
     public ConstructionLogDto getLogById(Long id) {
         ConstructionLog entity = constructionLogRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 공사일지가 없습니다. id=" + id));
         return entityToDto(entity);
     }
 
-    /**
-     * 3. 공사일지 "전체" 조회 (GET)
-     */
-    @Transactional(readOnly = true)
-    public List<ConstructionLogDto> findAllLogs() {
-        List<ConstructionLog> entities = constructionLogRepository.findAll();
+    // 3. 목록 조회 (내 글만)
+    public List<ConstructionLogDto> findAllMyLogs(String username) {
+        List<ConstructionLog> entities = constructionLogRepository.findByAuthorOrderByLogDateDesc(username);
         return entities.stream()
                 .map(this::entityToDto)
                 .collect(Collectors.toList());
     }
 
-    /**
-     * 4. 공사일지 수정 (PUT) - [리팩토링]
-     */
+    // 4. 수정
     @Transactional
     public ConstructionLogDto updateLog(Long id, ConstructionLogDto dto) {
-        // 1. ID로 기존 Entity 조회
         ConstructionLog entity = constructionLogRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 공사일지가 없습니다. id=" + id));
-
-        // 2. [리팩토링] 헬퍼 메서드를 호출하여 DTO의 내용으로 Entity 업데이트
         updateEntityFromDto(entity, dto);
-
-        // 3. DB에 저장 (JPA 변경 감지)
         ConstructionLog updatedEntity = constructionLogRepository.save(entity);
-
-        // 4. DTO로 변환하여 반환
         return entityToDto(updatedEntity);
     }
 
-    /**
-     * 5. 공사일지 삭제 (DELETE)
-     */
+    // 5. 삭제
     @Transactional
     public void deleteLog(Long id) {
         if (!constructionLogRepository.existsById(id)) {
@@ -86,16 +69,9 @@ public class ConstructionLogService {
         constructionLogRepository.deleteById(id);
     }
 
+    // --- DTO <-> Entity 변환 ---
 
-    // --- (핵심) DTO <-> Entity 변환 헬퍼 메서드 ---
-
-    /**
-     * [신규] DTO의 데이터를 Entity 객체로 복사하는 헬퍼 메서드 (중복 제거용)
-     * @param entity (신규 또는 기존 Entity)
-     * @param dto (데이터를 담고 있는 DTO)
-     */
     private void updateEntityFromDto(ConstructionLog entity, ConstructionLogDto dto) {
-        // 1. 단순 필드 복사
         entity.setCompany(dto.getCompany());
         entity.setLogDate(dto.getLogDate());
         entity.setWeather(dto.getWeather());
@@ -106,9 +82,11 @@ public class ConstructionLogService {
         entity.setRemarks(dto.getRemarks());
         entity.setManager(dto.getManager());
         entity.setSignature(dto.getSignature());
-        entity.setAuthor(dto.getAuthor());
 
-        // 2. List -> JSON String 변환
+        // ★ [AI 분석 필드 매핑]
+        entity.setAiWorkDescription(dto.getAiWorkDescription());
+
+        // JSON 리스트 변환
         entity.setWorkerNames(convertListToJsonString(dto.getWorkerNames()));
         entity.setPhotos(convertListToJsonString(dto.getPhotos()));
         entity.setAttachments(convertListToJsonString(dto.getAttachments()));
@@ -116,19 +94,12 @@ public class ConstructionLogService {
         entity.setMaterials(convertListToJsonString(dto.getMaterials()));
     }
 
-    /**
-     * DTO -> Entity 변환 (DB 저장용) - [리팩토링]
-     */
     private ConstructionLog dtoToEntity(ConstructionLogDto dto) {
         ConstructionLog entity = new ConstructionLog();
-        // [리팩토링] 헬퍼 메서드 호출
         updateEntityFromDto(entity, dto);
         return entity;
     }
 
-    /**
-     * Entity -> DTO 변환 (클라이언트 반환용)
-     */
     private ConstructionLogDto entityToDto(ConstructionLog entity) {
         ConstructionLogDto dto = new ConstructionLogDto();
 
@@ -145,51 +116,32 @@ public class ConstructionLogService {
         dto.setSignature(entity.getSignature());
         dto.setAuthor(entity.getAuthor());
 
-        // JSON String -> List 변환
+        // ★ [AI 분석 필드 반환]
+        dto.setAiWorkDescription(entity.getAiWorkDescription());
+
         dto.setWorkerNames(convertJsonStringToListString(entity.getWorkerNames()));
         dto.setPhotos(convertJsonStringToListString(entity.getPhotos()));
         dto.setAttachments(convertJsonStringToListString(entity.getAttachments()));
         dto.setEquipment(convertJsonStringToEquipmentList(entity.getEquipment()));
         dto.setMaterials(convertJsonStringToMaterialList(entity.getMaterials()));
-
         return dto;
     }
 
-    // --- 4. JSON 변환 헬퍼 메서드 (변경 없음) ---
-
+    // JSON Helper Methods (기존 유지)
     private String convertListToJsonString(Object list) {
         if (list == null) return null;
-        try {
-            return objectMapper.writeValueAsString(list);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("JSON 변환 오류 (List -> String)", e);
-        }
+        try { return objectMapper.writeValueAsString(list); } catch (JsonProcessingException e) { throw new RuntimeException(e); }
     }
-
     private List<String> convertJsonStringToListString(String json) {
         if (json == null || json.isEmpty()) return null;
-        try {
-            return objectMapper.readValue(json, new TypeReference<List<String>>() {});
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("JSON 변환 오류 (String -> List<String>)", e);
-        }
+        try { return objectMapper.readValue(json, new TypeReference<List<String>>() {}); } catch (JsonProcessingException e) { throw new RuntimeException(e); }
     }
-
     private List<EquipmentDto> convertJsonStringToEquipmentList(String json) {
         if (json == null || json.isEmpty()) return null;
-        try {
-            return objectMapper.readValue(json, new TypeReference<List<EquipmentDto>>() {});
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("JSON 변환 오류 (String -> List<EquipmentDto>)", e);
-        }
+        try { return objectMapper.readValue(json, new TypeReference<List<EquipmentDto>>() {}); } catch (JsonProcessingException e) { throw new RuntimeException(e); }
     }
-
     private List<MaterialDto> convertJsonStringToMaterialList(String json) {
         if (json == null || json.isEmpty()) return null;
-        try {
-            return objectMapper.readValue(json, new TypeReference<List<MaterialDto>>() {});
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("JSON 변환 오류 (String -> List<MaterialDto>)", e);
-        }
+        try { return objectMapper.readValue(json, new TypeReference<List<MaterialDto>>() {}); } catch (JsonProcessingException e) { throw new RuntimeException(e); }
     }
 }

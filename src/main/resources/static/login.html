@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>시스템 로그인</title>
+    <link rel="stylesheet" href="/common.css">
+    <style>
+        /* 로그인 페이지 전용 스타일 */
+        body {
+            /* 배경: 전문적인 느낌의 그라데이션 (파란색 계열) */
+            background: linear-gradient(135deg, #0062E6, #33AEFF);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+        }
+
+        .login-wrapper {
+            width: 100%;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .login-box {
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 420px;
+            padding: 50px 40px;
+            border-radius: 16px;
+            /* 부드럽고 깊은 그림자 효과 */
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            border: none; /* common.css의 border 제거 */
+        }
+
+        .brand-logo {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .login-box h1 {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .login-box p.subtitle {
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 0.95rem;
+        }
+
+        /* 입력 필드 디자인 개선 */
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .login-box input[type="text"],
+        .login-box input[type="password"] {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #e1e1e1;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        .login-box input:focus {
+            background-color: #fff;
+            border-color: #007bff;
+            box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.1);
+            outline: none;
+        }
+
+        /* 로그인 버튼 디자인 */
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(to right, #0062E6, #33AEFF);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 98, 230, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        /* 하단 링크 디자인 */
+        .footer-links {
+            margin-top: 25px;
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        .footer-links a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-wrapper">
+    <div class="login-box">
+        <span class="brand-logo">🏗️</span>
+        <h1>현장 관리 시스템</h1>
+        <p class="subtitle">안전한 현장 관리를 위한 시작</p>
+
+        <form action="/login" method="post">
+            <div class="input-group">
+                <label for="username">아이디</label>
+                <input type="text" id="username" name="username" placeholder="아이디를 입력하세요" required autocomplete="off">
+            </div>
+
+            <div class="input-group">
+                <label for="password">비밀번호</label>
+                <input type="password" id="password" name="password" placeholder="비밀번호를 입력하세요" required>
+            </div>
+
+            <button type="submit" class="submit-btn">로그인</button>
+        </form>
+
+        <div class="footer-links">
+            계정이 없으신가요? <a href="/signup.html">회원가입 하기</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

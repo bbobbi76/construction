@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -27,10 +28,16 @@ public class SafetyLogService {
 
     /**
      * 1. 안전일지 저장 (POST)
+     * - 로그인한 ID(username)를 받아서 저장
+     * - AI 분석 데이터(잠재위험 등)도 함께 저장
      */
     @Transactional
-    public SafetyLogDto createLog(SafetyLogDto dto) {
+    public SafetyLogDto createLog(SafetyLogDto dto, String username) {
         SafetyLog entity = dtoToEntity(dto);
+
+        // ★ [로그인 기능] 작성자 강제 주입
+        entity.setAuthor(username);
+
         SafetyLog savedEntity = safetyLogRepository.save(entity);
         return entityToDto(savedEntity);
     }
@@ -45,26 +52,25 @@ public class SafetyLogService {
     }
 
     /**
-     * 3. 안전일지 "전체" 조회 (GET)
+     * 3. "내" 안전일지 목록 조회 (GET)
+     * - 로그인한 사용자(author)의 글만 가져옴
      */
-    @Transactional(readOnly = true)
-    public List<SafetyLogDto> findAllLogs() {
-        List<SafetyLog> entities = safetyLogRepository.findAll();
+    public List<SafetyLogDto> findAllMyLogs(String username) {
+        List<SafetyLog> entities = safetyLogRepository.findByAuthorOrderByLogDateDesc(username);
         return entities.stream()
                 .map(this::entityToDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     /**
-     * 4. 안전일지 수정 (PUT) - [리팩토링]
+     * 4. 안전일지 수정 (PUT)
      */
     @Transactional
     public SafetyLogDto updateLog(Long id, SafetyLogDto dto) {
         SafetyLog entity = safetyLogRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 안전일지가 없습니다. id=" + id));
 
-        // [리팩토링] 헬퍼 메서드를 호출하여 DTO의 내용으로 Entity 업데이트
-        updateEntityFromDto(entity, dto);
+        updateEntityFromDto(entity, dto); // 데이터 업데이트
 
         SafetyLog updatedEntity = safetyLogRepository.save(entity);
         return entityToDto(updatedEntity);
@@ -84,13 +90,8 @@ public class SafetyLogService {
 
     // --- (핵심) DTO <-> Entity 변환 헬퍼 메서드 ---
 
-    /**
-     * [신규] DTO의 데이터를 Entity 객체로 복사하는 헬퍼 메서드 (중복 제거용)
-     * @param entity (신규 또는 기존 Entity)
-     * @param dto (데이터를 담고 있는 DTO)
-     */
     private void updateEntityFromDto(SafetyLog entity, SafetyLogDto dto) {
-        // 1. 단순 필드 복사 (공통 항목)
+        // 1. 기본 정보 복사
         entity.setCompany(dto.getCompany());
         entity.setLogDate(dto.getLogDate());
         entity.setWeather(dto.getWeather());
@@ -101,13 +102,17 @@ public class SafetyLogService {
         entity.setRemarks(dto.getRemarks());
         entity.setManager(dto.getManager());
         entity.setSignature(dto.getSignature());
-        entity.setAuthor(dto.getAuthor());
 
-        // 2. 단순 필드 복사 (안전일지 고유 항목)
-        entity.setRiskFactors(dto.getRiskFactors());
-        entity.setCorrectiveActions(dto.getCorrectiveActions());
+        // (작성자 author는 수정 시 건드리지 않음)
 
-        // 3.  List -> JSON String 변환
+        // 2. ★ [AI 분석 필드 복구] 이 부분이 누락되었었습니다.
+        entity.setPotentialRiskFactors(dto.getPotentialRiskFactors()); // 잠재위험
+        entity.setCountermeasures(dto.getCountermeasures());           // 대책
+        entity.setMajorRiskFactors(dto.getMajorRiskFactors());         // 중점위험
+        entity.setFollowUpPhoto(dto.getFollowUpPhoto());               // 후속조치 사진
+        entity.setCorrectiveActions(dto.getCorrectiveActions());       // 지적사항
+
+        // 3. JSON 리스트 변환
         entity.setWorkerNames(convertListToJsonString(dto.getWorkerNames()));
         entity.setPhotos(convertListToJsonString(dto.getPhotos()));
         entity.setAttachments(convertListToJsonString(dto.getAttachments()));
@@ -115,20 +120,12 @@ public class SafetyLogService {
         entity.setSafetyChecklist(convertListToJsonString(dto.getSafetyChecklist()));
     }
 
-
-    /**
-     * DTO -> Entity 변환 (DB 저장용) - [리팩토링]
-     */
     private SafetyLog dtoToEntity(SafetyLogDto dto) {
         SafetyLog entity = new SafetyLog();
-        // [리팩토링] 헬퍼 메서드 호출
         updateEntityFromDto(entity, dto);
         return entity;
     }
 
-    /**
-     * Entity -> DTO 변환 (클라이언트 반환용)
-     */
     private SafetyLogDto entityToDto(SafetyLog entity) {
         SafetyLogDto dto = new SafetyLogDto();
 
@@ -144,10 +141,15 @@ public class SafetyLogService {
         dto.setManager(entity.getManager());
         dto.setSignature(entity.getSignature());
         dto.setAuthor(entity.getAuthor());
-        dto.setRiskFactors(entity.getRiskFactors());
+
+        // ★ [AI 분석 필드 반환 복구]
+        dto.setPotentialRiskFactors(entity.getPotentialRiskFactors());
+        dto.setCountermeasures(entity.getCountermeasures());
+        dto.setMajorRiskFactors(entity.getMajorRiskFactors());
+        dto.setFollowUpPhoto(entity.getFollowUpPhoto());
         dto.setCorrectiveActions(entity.getCorrectiveActions());
 
-        // 4. JSON String -> List 변환
+        // JSON 변환
         dto.setWorkerNames(convertJsonStringToListString(entity.getWorkerNames()));
         dto.setPhotos(convertJsonStringToListString(entity.getPhotos()));
         dto.setAttachments(convertJsonStringToListString(entity.getAttachments()));
@@ -157,41 +159,21 @@ public class SafetyLogService {
         return dto;
     }
 
-    // --- 5. JSON 변환 헬퍼 메서드 (변경 없음) ---
-
+    // --- JSON 변환 유틸리티 ---
     private String convertListToJsonString(Object list) {
         if (list == null) return null;
-        try {
-            return objectMapper.writeValueAsString(list);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("JSON 변환 오류 (List -> String)", e);
-        }
+        try { return objectMapper.writeValueAsString(list); } catch (JsonProcessingException e) { throw new RuntimeException(e); }
     }
-
     private List<String> convertJsonStringToListString(String json) {
         if (json == null || json.isEmpty()) return null;
-        try {
-            return objectMapper.readValue(json, new TypeReference<List<String>>() {});
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("JSON 변환 오류 (String -> List<String>)", e);
-        }
+        try { return objectMapper.readValue(json, new TypeReference<List<String>>() {}); } catch (JsonProcessingException e) { throw new RuntimeException(e); }
     }
-
     private List<EquipmentDto> convertJsonStringToEquipmentList(String json) {
         if (json == null || json.isEmpty()) return null;
-        try {
-            return objectMapper.readValue(json, new TypeReference<List<EquipmentDto>>() {});
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("JSON 변환 오류 (String -> List<EquipmentDto>)", e);
-        }
+        try { return objectMapper.readValue(json, new TypeReference<List<EquipmentDto>>() {}); } catch (JsonProcessingException e) { throw new RuntimeException(e); }
     }
-
     private List<SafetyCheckItemDto> convertJsonStringToSafetyCheckList(String json) {
         if (json == null || json.isEmpty()) return null;
-        try {
-            return objectMapper.readValue(json, new TypeReference<List<SafetyCheckItemDto>>() {});
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("JSON 변환 오류 (String -> List<SafetyCheckItemDto>)", e);
-        }
+        try { return objectMapper.readValue(json, new TypeReference<List<SafetyCheckItemDto>>() {}); } catch (JsonProcessingException e) { throw new RuntimeException(e); }
     }
 }

@@ -3,13 +3,10 @@ package com.domain.project.dto;
 import lombok.Data;
 import java.util.List;
 
-/**
- * 공사일지 (ConstructionLog) 메인 DTO 클래스 (Lombok 적용)
- */
 @Data
 public class ConstructionLogDto {
-    private Long id; // DB에서 생성된 고유 ID
-    // --- 공통 항목 ---
+    private Long id;
+
     private String company;
     private String logDate;
     private String weather;
@@ -24,10 +21,13 @@ public class ConstructionLogDto {
     private List<String> photos;
     private String signature;
     private List<String> attachments;
-    private String author; //작성자
 
-    // --- 공사일지 고유 항목 ---
+    // [로그인]
+    private String author;
+
+    // [공사일지 고유]
     private List<MaterialDto> materials;
 
-    // Getter/Setter 모두 @Data가 자동으로 생성
+    // ★ [AI 분석 필드]
+    private String aiWorkDescription;
 }

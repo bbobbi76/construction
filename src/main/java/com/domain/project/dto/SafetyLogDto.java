@@ -3,14 +3,9 @@ package com.domain.project.dto;
 import lombok.Data;
 import java.util.List;
 
-/**
- * 안전일지 (SafetyLog) 메인 DTO 클래스 (Lombok 적용)
- */
 @Data
 public class SafetyLogDto {
-
-    // --- 공통 항목 ---
-    private Long id; // DB에서 생성된 고유 ID
+    private Long id;
     private String company;
     private String logDate;
     private String weather;
@@ -25,12 +20,15 @@ public class SafetyLogDto {
     private List<String> photos;
     private String signature;
     private List<String> attachments;
-    private String author; //작성자
+    private String author;
 
-    // --- 안전일지 고유 항목 ---
-    private String riskFactors;
-    private String correctiveActions;
+    // --- AI 분석 대응 항목 ---
     private List<SafetyCheckItemDto> safetyChecklist;
 
-    // Getter/Setter 모두 @Data가 자동으로 생성
+    private String potentialRiskFactors; // 1. 잠재위험
+    private String countermeasures;      // 2. 대책
+    private String majorRiskFactors;     // 3. 중점위험
+    private String followUpPhoto;        // 4. 후속조치사진
+
+    private String correctiveActions;    // 지적사항
 }

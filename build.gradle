@@ -39,8 +39,12 @@ dependencies {
 
     // 5. 기본 테스트 라이브러리
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+
+    implementation 'org.springframework.boot:spring-boot-starter-security'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
 }
+

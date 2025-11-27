@@ -27,14 +27,16 @@
                 </div>
                 <div class="form-group">
                     <label for="logDate">작업일</label>
-                    <input type="date" id="logDate" required> </div>
+                    <input type="date" id="logDate" required>
+                </div>
                 <div class="form-group">
                     <label for="weather">날씨</label>
                     <input type="text" id="weather" placeholder="맑음 (최고 20°C / 최저 10°C)">
                 </div>
                 <div class="form-group">
                     <label for="location">현장 위치</label>
-                    <input type="text" id="location" value="춘천시 OO 아파트 신축 현장" required> </div>
+                    <input type="text" id="location" value="춘천시 OO 아파트 신축 현장" required>
+                </div>
             </div>
         </div>
 
@@ -43,7 +45,7 @@
             <div class="form-grid">
                 <div class="form-group">
                     <label for="author">작성자</label>
-                    <input type="text" id="author" placeholder="김인턴">
+                    <input type="text" id="author" placeholder="로그인 정보 자동 입력" readonly style="background: #f0f0f0;">
                 </div>
                 <div class="form-group">
                     <label for="manager">현장 관리자</label>
@@ -69,8 +71,20 @@
                 <textarea id="workerNames" placeholder="김철수, 이영희, 박현장"></textarea>
             </div>
             <div class="form-group" style="margin-top: 15px;">
-                <label for="workDetails">주요 작업 내용</label>
-                <textarea id="workDetails" placeholder="오전: ...&#10;오후: ..."></textarea>
+                <label for="workDetails">주요 작업 내용 (상세)</label>
+                <textarea id="workDetails" placeholder="오전: 101동 1층 슬라브 배근...&#10;오후: ..."></textarea>
+            </div>
+        </div>
+
+        <div class="form-section" style="background-color: #f8faff; border: 1px solid #cce5ff; border-radius: 8px; padding: 20px;">
+            <h2 style="color: #0056b3; border-bottom-color: #badce3;">🤖 AI 현장 분석 (사진 기반)</h2>
+            <p style="font-size: 0.9rem; color: #666; margin-bottom: 10px;">
+                업로드한 현장 사진을 AI가 분석하여 어떤 작업 중인지 요약합니다.
+            </p>
+            <div class="form-group">
+                <label for="aiWorkDescription">AI 분석 내용</label>
+                <textarea id="aiWorkDescription" style="background-color: #fff; height: 80px;"
+                          placeholder="[사진을 올리면 AI가 분석한 내용이 여기에 들어갑니다]&#10;예: 철근 배근 작업 진행 중, 자재 정리 상태 양호"></textarea>
             </div>
         </div>
 
@@ -93,7 +107,7 @@
             <h2>파일 및 서명</h2>
 
             <div class="form-group">
-                <label for="photosInput">현장 사진 </label>
+                <label for="photosInput">현장 사진 (AI 분석용)</label>
                 <input type="file" id="photosInput" multiple accept="image/*" capture="environment">
             </div>
 

@@ -1,71 +1,65 @@
 package com.domain.project.controller;
 
-// 1. 필요한 import 문들
 import com.domain.project.dto.ConstructionLogDto;
 import com.domain.project.service.ConstructionLogService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List; // List import 추가
+import java.security.Principal; // ★ 중요: 현재 로그인한 사용자 정보를 담고 있는 객체
+import java.util.List;
 
-@RestController // 2. "이 클래스는 REST API의 요청을 받는 Controller입니다."
-@RequestMapping("/api/construction-log") // 3. "이 컨트롤러의 모든 API 주소는 /api/construction-log로 시작합니다."
+@RestController
+@RequestMapping("/api/construction-log")
 public class ConstructionLogController {
 
-    private final ConstructionLogService constructionLogService; // Service를 주입받습니다.
+    private final ConstructionLogService constructionLogService;
 
-    // 4. 생성자 주입
     public ConstructionLogController(ConstructionLogService constructionLogService) {
         this.constructionLogService = constructionLogService;
     }
 
     /**
-     * [POST] /api/construction-log
-     * 공사일지 1건 생성 (저장)
+     * [POST] 공사일지 생성
+     * - Principal 객체를 통해 로그인한 사용자의 아이디(username)를 가져옵니다.
      */
     @PostMapping
-    public ResponseEntity<ConstructionLogDto> createLog(@RequestBody ConstructionLogDto dto) {
-        // @RequestBody: HTTP 요청의 Body(본문)에 담긴 JSON 데이터를 DTO 객체로 변환
+    public ResponseEntity<ConstructionLogDto> createLog(@RequestBody ConstructionLogDto dto, Principal principal) {
+        // 1. 로그인한 사용자 아이디 꺼내기
+        String username = principal.getName();
 
-        // 5. Service의 createLog 메서드 호출
-        ConstructionLogDto createdDto = constructionLogService.createLog(dto);
+        // 2. 서비스에 DTO와 사용자 아이디를 함께 전달
+        ConstructionLogDto createdDto = constructionLogService.createLog(dto, username);
 
-        // 6. HTTP 201 Created 상태 코드와 함께,
-        //    DB에 저장된 데이터(id 포함)를 클라이언트에게 반환
         return ResponseEntity.status(HttpStatus.CREATED).body(createdDto);
     }
 
     /**
-     * [GET] /api/construction-log/{id}
-     * 공사일지 1건 조회
-     */
-    @GetMapping("/{id}")
-    public ResponseEntity<ConstructionLogDto> getLog(@PathVariable Long id) {
-        // @PathVariable: URL 주소(예: /1)에 포함된 숫자 1을 id 변수에 넣어줌
-
-        // 7. Service의 getLogById 메서드 호출
-        ConstructionLogDto dto = constructionLogService.getLogById(id);
-
-        // 8. HTTP 200 OK 상태 코드와 함께 조회된 DTO를 반환
-        return ResponseEntity.ok(dto);
-    }
-
-    /**
-     *  [GET] /api/construction-log
-     * 공사일지 "전체 목록" 조회
-     * (log-list.js의 loadConstructionLogs()가 호출함)
+     * [GET] 공사일지 목록 조회
+     * - 전체 목록이 아닌, 로그인한 사용자가 작성한 목록만 가져옵니다.
      */
     @GetMapping
-    public ResponseEntity<List<ConstructionLogDto>> getAllLogs() {
-        // Service에 방금 추가한 findAllLogs() 메서드 호출
-        List<ConstructionLogDto> dtos = constructionLogService.findAllLogs();
+    public ResponseEntity<List<ConstructionLogDto>> getAllLogs(Principal principal) {
+        // 1. 로그인한 사용자 아이디 꺼내기
+        String username = principal.getName();
+
+        // 2. "내" 일지 목록만 조회하는 서비스 메서드 호출
+        List<ConstructionLogDto> dtos = constructionLogService.findAllMyLogs(username);
+
         return ResponseEntity.ok(dtos);
     }
 
     /**
-     * [PUT] /api/construction-log/{id}
-     * 공사일지 1건 수정
+     * [GET] 공사일지 단건 조회
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<ConstructionLogDto> getLog(@PathVariable Long id) {
+        ConstructionLogDto dto = constructionLogService.getLogById(id);
+        return ResponseEntity.ok(dto);
+    }
+
+    /**
+     * [PUT] 공사일지 수정
      */
     @PutMapping("/{id}")
     public ResponseEntity<ConstructionLogDto> updateLog(@PathVariable Long id, @RequestBody ConstructionLogDto dto) {
@@ -74,13 +68,11 @@ public class ConstructionLogController {
     }
 
     /**
-     * [DELETE] /api/construction-log/{id}
-     * 공사일지 1건 삭제
+     * [DELETE] 공사일지 삭제
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLog(@PathVariable Long id) {
         constructionLogService.deleteLog(id);
-        return ResponseEntity.noContent().build(); // 성공 시 204 No Content 응답
+        return ResponseEntity.noContent().build();
     }
-
 }

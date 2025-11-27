@@ -1,58 +1,43 @@
 package com.domain.project.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Getter // Lombok: 모든 필드의 Getter 자동 생성
-@Setter // Lombok: 모든 필드의 Setter 자동 생성
+@Getter @Setter
 public class ConstructionLog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // --- 공통 항목 ---
     private String company;
     private String logDate;
     private String weather;
     private String location;
 
-    @Lob
-    private String workDetails;
-
+    @Lob private String workDetails; // (사람이 직접 쓰는 상세 작업 내용)
     private String workType;
     private int workersCount;
 
-    @Lob
-    private String workerNames; // JSON 문자열
-
-    @Lob
-    private String remarks;
+    @Lob private String workerNames; // JSON
+    @Lob private String remarks;
 
     private String manager;
 
-    @Lob
-    private String equipment; // JSON 문자열
+    @Lob private String equipment;   // JSON
+    @Lob private String photos;      // 현장 사진 (AI 분석 대상)
+    @Lob private String signature;
+    @Lob private String attachments; // JSON
 
-    @Lob
-    private String photos; // JSON 문자열
-
-    @Lob
-    private String signature;
-
-    @Lob
-    private String attachments; // JSON 문자열
-
-    private String author; //작성자
+    // [로그인 기능] 작성자 ID
+    private String author;
 
     // --- 공사일지 고유 항목 ---
-    @Lob
-    private String materials; // JSON 문자열
+    @Lob private String materials;   // 자재 JSON
 
-    // 모든 Getter/Setter가 Lombok에 의해 자동 생성됨
+    // ★ [AI 분석 필드] 사진 보고 무슨 작업인지 분석한 내용
+    @Lob private String aiWorkDescription;
 }
