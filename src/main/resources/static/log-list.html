@@ -3,29 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>일지 목록</title> <link rel="stylesheet" href="/common.css">
+    <title>일지 목록</title>
+
+    <link rel="stylesheet" href="/common.css">
+
+    <style>
+        /* --- 목록 페이지 전용 스타일 --- */
+
+        /* 리스트 섹션 간의 간격 (공사일지와 안전일지 사이) */
+        .list-section {
+            margin-bottom: 40px;
+        }
+
+        /* 섹션 제목 스타일 (밑줄 포함) */
+        .section-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .section-title h2 {
+            margin: 0;
+            border: none; /* h2 공통 스타일 초기화 */
+            padding: 0;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* 개수 표시 뱃지 (JS에서 동적으로 사용될 수 있음) */
+        .count-badge {
+            background-color: #e9ecef;
+            color: #495057;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: normal;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
+
     <header class="page-header">
-        <a href="/index.html" class="btn-main">&larr; 메인으로</a>
-        <div>
-            <a href="/construction-log.html" class="btn-main">새 공사일지 작성</a>
-            <a href="/safety-log.html" class="btn-main" style="margin-left: 10px;">새 안전일지 작성</a>
+        <a href="/index.html" class="btn-main">🏠 메인으로</a>
+
+        <div style="display: flex; gap: 10px;">
+            <a href="/construction-log.html" class="btn-list" style="background-color: #3498db;">
+                + 새 공사일지
+            </a>
+            <a href="/safety-log.html" class="btn-list" style="background-color: #e74c3c;">
+                + 새 안전일지
+            </a>
         </div>
     </header>
 
+    <h1>일지 통합 목록</h1>
+
     <div class="list-section">
-        <h2>공사일지 목록</h2>
+        <div class="section-title">
+            <h2 style="color: #2980b9;">공사일지 목록</h2>
+        </div>
         <div id="constructionList">
-            <p>로딩 중...</p>
+            <p style="color:#666; padding:20px; text-align:center;">데이터를 불러오는 중...</p>
         </div>
     </div>
 
     <div class="list-section">
-        <h2>안전일지 목록</h2>
+        <div class="section-title">
+            <h2 style="color: #c0392b;">안전일지 목록</h2>
+        </div>
         <div id="safetyList">
-            <p>로딩 중...</p>
+            <p style="color:#666; padding:20px; text-align:center;">데이터를 불러오는 중...</p>
         </div>
     </div>
 

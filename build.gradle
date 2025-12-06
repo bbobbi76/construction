@@ -40,8 +40,17 @@ dependencies {
     // 5. 기본 테스트 라이브러리
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
+    implementation 'com.itextpdf:itextpdf:5.5.13.3'
+    // 한글 처리를 위한 라이브러리
+    implementation 'com.itextpdf:itext-asian:5.2.0'
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.json:json:20231013'
 
     implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // Swagger (SpringDoc OpenAPI) - Spring Boot 3.x용
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
 }
 
 tasks.named('test') {

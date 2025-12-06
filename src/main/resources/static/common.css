@@ -1,359 +1,368 @@
-/* --- 1. 글로벌 스타일 --- */
-body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    margin: 0;
-    padding: 20px;
-    background-color: #f4f7f6;
-    color: #333;
+/* ==========================================================================
+   1. 글로벌 변수 및 기본 설정
+   ========================================================================== */
+:root {
+    /* 테마 색상 정의 (유지보수를 위해 변수 사용) */
+    --primary-color: #2c3e50;  /* 짙은 네이비 (주 텍스트/헤더) */
+    --accent-color: #3498db;   /* 파란색 (강조, 링크, 포커스) */
+    --success-color: #27ae60;  /* 초록색 (성공, 추가 버튼) */
+    --danger-color: #e74c3c;   /* 빨간색 (삭제, 위험, PDF 버튼) */
+    --bg-color: #f0f2f5;       /* 전체 배경색 (연한 회색) */
+    --card-bg: #ffffff;        /* 카드/폼 배경색 (흰색) */
+    --text-color: #333333;     /* 기본 텍스트 색상 */
+    --border-radius: 8px;      /* 둥근 모서리 기본값 */
 }
 
+body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+    margin: 0;
+    padding: 40px 20px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    word-break: keep-all; /* 한글 단어가 뚝 끊기지 않도록 설정 */
+}
+
+/* 메인 컨테이너 (최대 너비 제한 및 중앙 정렬) */
 .container {
-    max-width: 1000px;
+    max-width: 1100px;
     margin: 0 auto;
-    padding: 30px;
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    width: 100%;       /* 모바일 등 작은 화면에서는 꽉 차게 */
+    box-sizing: border-box;
+}
+
+
+/* ==========================================================================
+   2. 헤더 및 타이틀 스타일
+   ========================================================================== */
+.page-header {
+    display: flex;
+    justify-content: space-between; /* 좌우 끝으로 정렬 */
+    align-items: center;            /* 세로 중앙 정렬 */
+    margin-bottom: 30px;
+    background: var(--card-bg);
+    padding: 20px 30px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    flex-wrap: wrap; /* 화면이 좁을 때 버튼들이 아래로 내려가도록 함 */
+    gap: 15px;       /* 줄바꿈 시 요소 간 간격 */
 }
 
 h1 {
     text-align: center;
-    color: #222;
-    margin-bottom: 30px;
+    color: var(--primary-color);
+    margin-bottom: 40px;
+    font-size: 2rem;
+    font-weight: 700;
 }
+
 h2 {
-    color: #007bff;
-    border-bottom: 2px solid #eee;
-    padding-bottom: 10px;
+    color: var(--primary-color);
+    font-size: 1.25rem;
+    border-left: 5px solid var(--accent-color); /* 좌측 파란색 포인트 라인 */
+    padding-left: 15px;
+    margin-bottom: 20px;
+    margin-top: 0;
 }
 
-/* --- 2. 헤더 (메인/목록) --- */
-.page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #eee;
-}
-.page-header a {
-    text-decoration: none;
-    font-weight: 600;
-    padding: 8px 12px;
-    border-radius: 6px;
-    transition: background-color 0.2s;
-}
-.page-header .btn-main {
-    color: #007bff;
-}
-.page-header .btn-main:hover {
-    background-color: #f0f7ff;
-}
-.page-header .btn-list {
-    color: #17a2b8;
-}
-.page-header .btn-list:hover {
-    background-color: #f0fcfd;
-}
 
-/* --- 3. 폼 스타일 (공사/안전) --- */
+/* ==========================================================================
+   3. 폼(Form) 레이아웃 및 입력 필드
+   ========================================================================== */
 .form-section {
-    margin-bottom: 30px;
-    border-bottom: 1px solid #f0f0f0;
-    padding-bottom: 30px;
+    background: var(--card-bg);
+    padding: 30px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    margin-bottom: 25px;
+    border: 1px solid #e1e4e8;
 }
+
+/* 반응형 그리드 레이아웃 */
 .form-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
+    /* 최소 300px 크기를 유지하면서 화면에 꽉 차게 자동 배열 */
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
 }
+
 .form-group {
     display: flex;
     flex-direction: column;
+    width: 100%;
 }
 
 label {
     font-weight: 600;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
+    color: #555;
     font-size: 0.95rem;
-    color: #444;
 }
 
+/* 모든 입력 필드 공통 스타일 */
 input[type="text"],
 input[type="date"],
 input[type="number"],
+select,
 textarea,
 input[type="file"] {
     font-size: 1rem;
-    padding: 12px;
-    border: 1px solid #ccc;
+    padding: 12px 15px;
+    border: 1px solid #dce0e4;
     border-radius: 6px;
-    background-color: #fff;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    background-color: #f9fafb;
+    width: 100%;             /* 부모 너비에 맞춤 */
+    box-sizing: border-box;  /* 패딩이 너비에 포함되도록 계산 */
+    transition: all 0.2s;
 }
 
-input[type="text"]:focus,
-input[type="date"]:focus,
-input[type="number"]:focus,
-textarea:focus,
-input[type="file"]:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+/* 입력 필드 포커스 효과 (파란 테두리) */
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--accent-color);
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
     outline: none;
 }
 
-input[type="file"] {
-    background-color: #fcfcfc;
-    cursor: pointer;
-}
 textarea {
-    min-height: 100px;
-    resize: vertical;
+    min-height: 120px;
+    resize: vertical; /* 세로 크기 조절만 허용 */
 }
 
-/* --- 4. 버튼 --- */
-.submit-btn,
-.row-add-btn,
-.row-del-btn,
-.sig-btn {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 6px;
+
+/* ==========================================================================
+   4. 버튼 스타일
+   ========================================================================== */
+button,
+.btn-main,
+.btn-list,
+.btn-pdf,
+.btn-edit {
     cursor: pointer;
-    font-weight: 600;
-    transition: background-color 0.2s, opacity 0.2s;
-}
-.submit-btn:disabled,
-.row-add-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+    font-family: inherit;
+    border: none;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    white-space: nowrap; /* 버튼 텍스트 줄바꿈 방지 */
 }
 
-/* (메인) 최종 저장 */
+/* 메인 저장 버튼 (하단 큰 버튼) */
 .submit-btn {
     width: 100%;
-    padding: 15px;
-    font-size: 1.1rem;
-    background-color: #007bff;
+    padding: 18px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    background: linear-gradient(135deg, #3498db, #2980b9);
     color: white;
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+    margin-top: 20px;
 }
-.submit-btn:hover { background-color: #0056b3; }
 
-/* (행 추가) */
-.row-add-btn {
-    background-color: #28a745;
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+}
+
+/* 상단 메인 버튼 */
+.btn-main { background-color: #e9ecef; color: #495057; margin-right: 10px; padding: 10px 20px; border-radius: 6px; font-weight: 600; }
+.btn-main:hover { background-color: #dee2e6; }
+
+/* 목록 버튼 */
+.btn-list { background-color: var(--primary-color); color: white; padding: 10px 20px; border-radius: 6px; font-weight: 600; }
+.btn-list:hover { background-color: #1a252f; }
+
+/* AI 분석 버튼 */
+.ai-btn {
+    background-color: #6c5ce7;
     color: white;
-    margin-top: 10px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
 }
-.row-add-btn:hover { background-color: #218838; }
+.ai-btn:hover { background-color: #5b4cc4; transform: translateY(-1px); }
 
-/* (행 삭제) */
-.row-del-btn {
-    background-color: #dc3545;
-    color: white;
-    padding: 5px 10px;
-}
-.row-del-btn:hover { background-color: #c82333; }
+/* 테이블 행 추가/삭제 버튼 */
+.row-add-btn { background-color: var(--success-color); color: white; padding: 6px 12px; border-radius: 4px; font-size: 0.9rem; margin-left: auto; }
+.row-del-btn { background-color: #fff; color: var(--danger-color); border: 1px solid var(--danger-color); padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; }
+.row-del-btn:hover { background-color: var(--danger-color); color: white; }
 
-/* --- 5. 테이블 (폼 내부) --- */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 15px;
-}
-th, td {
-    border: 1px solid #ddd;
-    padding: 12px;
-    text-align: left;
-    vertical-align: middle;
-}
-th {
-    background-color: #f9f9f9;
-}
-/* 테이블 안의 input은 padding을 줄임 */
-td input[type="text"],
-td input[type="number"] {
-    padding: 8px;
-    width: 100%;
-    box-sizing: border-box; /* (테두리 포함 너비) */
-}
 
-/* --- 6. 서명 패드 --- */
-.signature-pad-wrapper {
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    position: relative;
-    height: 200px;
-}
-canvas {
-    width: 100%;
-    height: 100%;
-    border-radius: 6px;
-}
-.signature-pad-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-}
-.sig-btn {
-    border: 1px solid #007bff;
-    background-color: #fff;
-    color: #007bff;
-}
-.sig-btn.clear {
-    border-color: #dc3545;
-    color: #dc3545;
-}
-.sig-btn:hover { background-color: #f8f9fa; }
-
-/* --- 7. 체크박스 (안전일지) --- */
-.checkbox-group { display: flex; flex-direction: column; gap: 10px; }
-.checkbox-group div { display: flex; align-items: center; }
-.checkbox-group label { margin-bottom: 0; margin-left: 8px; font-weight: normal; }
-.checkbox-group input[type="checkbox"] { width: 1.2em; height: 1.2em; }
-
-/* --- 8. index.html (메인 메뉴) --- */
-.menu-container {
+/* ==========================================================================
+   5. 테이블 스타일
+   ========================================================================== */
+.tables-container {
     display: flex;
     gap: 30px;
-    margin-top: 40px;
-}
-.menu-box {
-    width: 250px;
-    padding: 40px;
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    background-color: #ffffff;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    text-decoration: none;
-    color: #333;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.menu-box:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-}
-.menu-box h2 {
-    margin-top: 0;
-    color: #007bff;
-    border: none; /* (h2 공통 스타일 덮어쓰기) */
-}
-.menu-box p {
-    color: #555;
-    font-size: 0.9rem;
-}
-.menu-box h2.list {
-    color: #17a2b8;
+    flex-wrap: wrap; /* 화면 좁으면 아래로 떨어짐 */
 }
 
-/* --- 9. log-list.html (목록) --- */
-.report-list {
-    list-style: none;
-    padding: 0;
-}
-.report-item a {
-    display: flex;
-    justify-content: space-between; /* (회사/날짜 분리) */
-    align-items: center;
-    padding: 20px;
-    margin: 10px 0;
-    border: 1px solid #ddd;
+.table-wrapper {
+    flex: 1; /* 남은 공간 균등 분할 */
+    background: #fff;
+    border: 1px solid #eee;
     border-radius: 8px;
-    text-decoration: none;
-    color: #333;
-    font-weight: 600;
-    font-size: 1.1rem;
-    background-color: #fcfcfc;
-    transition: background-color 0.2s, border-color 0.2s;
-}
-.report-item a:hover {
-    background-color: #f0f8ff;
-    border-color: #007bff;
-}
-.report-item span {
-    color: #555;
-    font-weight: normal;
-    font-size: 1rem;
+    padding: 15px;
+    min-width: 300px; /* 최소 너비 */
 }
 
-/*  10. log-list.html (버튼) --- */
-.btn-edit {
-    background-color: #fff;
-    color: #007bff;
-    border: 1px solid #007bff;
-    padding: 5px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: 600;
-    text-decoration: none; /* (<a> 태그로 바꿀거라 밑줄 제거) */
-    display: inline-block; /* (<a> 태그 패딩 적용) */
-    transition: background-color 0.2s, color 0.2s;
-}
-.btn-edit:hover {
-    background-color: #007bff; /* (마우스 올리면 반전) */
-    color: #fff;
-}
-
-.btn-delete {
-    background-color: #fff;
-    color: #dc3545;
-    border: 1px solid #dc3545;
-    padding: 5px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: background-color 0.2s, color 0.2s;
-}
-.btn-delete:hover {
-    background-color: #dc3545; /* (마우스 올리면 반전) */
-    color: #fff;
-}
-
-
-/*  11. log-list.html (카드 목록 스타일) --- */
-.log-card-list {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.log-card {
+.table-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px;
-    border: 1px solid #ddd;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 10px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* 셀 너비 고정 (내용 넘침 방지) */
+}
+
+th {
+    text-align: left;
+    color: #666;
+    font-size: 0.9rem;
+    padding: 8px;
+}
+
+td { padding: 5px; }
+td input { border: 1px solid #eee; background: #fff; width: 100%; }
+
+
+/* ==========================================================================
+   6. 서명 패드 (Canvas)
+   ========================================================================== */
+.signature-pad-wrapper {
+    width: 100%;
+    height: 200px;
+    border: 2px dashed #ccc;
     border-radius: 8px;
-    background-color: #fcfcfc;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
-    transition: box-shadow 0.2s, border-color 0.2s;
+    background-color: #fdfdfd;
+    position: relative;
+    box-sizing: border-box;
+    overflow: hidden; /* Canvas가 영역 밖으로 나가는 것 방지 */
+}
+
+canvas {
+    width: 100%;
+    height: 100%;
+    display: block; /* 하단 여백(inline 특성) 제거 */
+}
+
+.signature-pad-actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+.sig-btn {
+    padding: 8px 16px;
+    background: #fff;
+    border: 1px solid #ccc;
+    color: #555;
+    border-radius: 4px;
+}
+.sig-btn:hover { background: #f0f0f0; }
+
+
+/* ==========================================================================
+   7. 일지 목록 (카드 리스트) 스타일
+   ========================================================================== */
+.log-card-list {
+    display: grid;
+    gap: 20px;
+}
+
+.log-card {
+    background: white;
+    border-radius: 10px;
+    padding: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    border: 1px solid #eee;
+    transition: all 0.2s ease;
+    flex-wrap: wrap; /* 화면이 좁으면 버튼들이 아래로 내려감 */
+    gap: 15px;
 }
 
 .log-card:hover {
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-    border-color: #007bff;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    border-color: var(--accent-color);
 }
 
-/* '정보' 영역을 링크로 만들기 위한 스타일 */
-.log-card .info-link {
+.info-link {
     text-decoration: none;
-    flex-grow: 1; /* (버튼 제외한 나머지 공간 다 차지) */
+    flex-grow: 1;
+    min-width: 200px;
 }
 
-.log-card .info-link .location {
-    font-size: 1.15rem;
-    font-weight: 600;
-    color: #333;
-}
-.log-card .info-link .meta {
-    font-size: 0.9rem;
-    color: #666;
-    margin-top: 5px;
+.info-link .location {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 5px;
 }
 
-.log-card .actions {
+.info-link .meta {
+    color: #888;
+    font-size: 0.95rem;
     display: flex;
-    gap: 10px;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
     flex-shrink: 0;
 }
 
+/* 목록 내 버튼들 (PDF, 수정, 삭제) */
+.btn-pdf { background-color: #fff0f0; color: #c0392b; padding: 8px 12px; border-radius: 6px; font-weight: 600; border: 1px solid #c0392b; }
+.btn-pdf:hover { background-color: #c0392b; color: white; }
+
+.btn-edit { background-color: #ebf5fb; color: #2980b9; padding: 8px 12px; border-radius: 6px; border: 1px solid #2980b9; }
+.btn-edit:hover { background-color: #2980b9; color: white; }
+
+.btn-delete { background-color: #f2f4f6; color: #666; padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc; }
+.btn-delete:hover { background-color: #e9ecef; color: #333; }
+
+
+/* ==========================================================================
+   8. 모바일 반응형 처리 (Max-width: 768px)
+   ========================================================================== */
+@media (max-width: 768px) {
+    .container { padding: 10px; }
+
+    .page-header {
+        flex-direction: column; /* 헤더 버튼들 세로 배치 */
+        gap: 15px;
+        text-align: center;
+    }
+
+    .log-card {
+        flex-direction: column; /* 카드 내용 세로 배치 */
+        align-items: flex-start;
+    }
+
+    .actions {
+        width: 100%;
+        justify-content: flex-end; /* 버튼들은 우측 정렬 */
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr; /* 입력 필드 한 줄에 하나씩 */
+    }
+}

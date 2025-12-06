@@ -4,16 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>시스템 회원가입</title>
+
     <link rel="stylesheet" href="/common.css">
+
     <style>
-        /* 로그인/회원가입 공통 스타일 */
+        /* --- 1. 전체 페이지 레이아웃 --- */
         body {
-            background: linear-gradient(135deg, #0062E6, #33AEFF);
+            /* 배경: 파란색 계열의 대각선 그라데이션 */
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
             min-height: 100vh;
             display: flex;
-            justify-content: center;
-            align-items: center;
+            justify-content: center; /* 가로 중앙 정렬 */
+            align-items: center;     /* 세로 중앙 정렬 */
             margin: 0;
+            font-family: 'Pretendard', sans-serif;
         }
 
         .login-wrapper {
@@ -23,39 +27,49 @@
             justify-content: center;
         }
 
+        /* --- 2. 회원가입 카드 박스 디자인 --- */
         .login-box {
             background-color: #ffffff;
             width: 100%;
-            max-width: 420px;
-            padding: 50px 40px;
-            border-radius: 16px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            max-width: 400px;       /* 너무 넓어지지 않게 제한 */
+            padding: 50px 40px;     /* 내부 여백 */
+            border-radius: 12px;    /* 모서리 둥글게 */
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
             text-align: center;
-            border: none;
         }
 
-        .brand-logo {
-            font-size: 3rem;
-            margin-bottom: 10px;
-            display: block;
+        /* 상단 아이콘 (초록색 테마) */
+        .brand-icon {
+            width: 60px;
+            height: 60px;
+            background-color: #e8f5e9; /* 연한 초록 배경 */
+            color: #2e7d32;            /* 진한 초록 아이콘 */
+            font-size: 2rem;
+            border-radius: 50%;        /* 원형 만들기 */
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
         }
 
-        .login-box h1 {
-            font-size: 1.8rem;
+        /* 타이틀 스타일 */
+        h1 {
+            font-size: 1.6rem;
             color: #333;
-            margin-bottom: 10px;
+            margin: 0 0 10px;
             font-weight: 700;
         }
 
-        .login-box p.subtitle {
+        p.subtitle {
             color: #666;
-            margin-bottom: 30px;
+            margin: 0 0 30px;
             font-size: 0.95rem;
         }
 
+        /* --- 3. 입력 폼 스타일 --- */
         .input-group {
             margin-bottom: 20px;
-            text-align: left;
+            text-align: left; /* 라벨은 왼쪽 정렬 */
         }
 
         .input-group label {
@@ -66,53 +80,55 @@
             font-weight: 600;
         }
 
-        .login-box input[type="text"],
-        .login-box input[type="password"] {
+        /* 입력창 공통 */
+        input[type="text"],
+        input[type="password"] {
             width: 100%;
             padding: 14px;
-            border: 1px solid #e1e1e1;
+            border: 1px solid #ddd;
             border-radius: 8px;
-            background-color: #f9f9f9;
+            background-color: #fdfdfd;
             font-size: 1rem;
-            box-sizing: border-box;
-            transition: all 0.3s ease;
+            box-sizing: border-box; /* 테두리 포함 크기 계산 */
+            transition: all 0.2s;
         }
 
-        .login-box input:focus {
+        /* 입력창 포커스 효과 (초록색 포인트) */
+        input:focus {
+            border-color: #2e7d32;
             background-color: #fff;
-            border-color: #007bff;
-            box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.1);
+            box-shadow: 0 0 0 4px rgba(46, 125, 50, 0.1);
             outline: none;
         }
 
+        /* --- 4. 버튼 및 하단 링크 --- */
         .submit-btn {
             width: 100%;
-            padding: 15px;
-            /* 회원가입은 약간 다른 느낌을 주거나 동일하게 유지 (여기선 통일감 위해 블루 유지) */
-            background: linear-gradient(to right, #0062E6, #33AEFF);
+            padding: 16px;
+            background: linear-gradient(to right, #2e7d32, #43a047); /* 초록색 그라데이션 */
             color: white;
             font-size: 1.1rem;
             font-weight: bold;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
             margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
+            transition: transform 0.2s;
         }
 
         .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 98, 230, 0.3);
+            transform: translateY(-2px); /* 마우스 올리면 살짝 떠오름 */
         }
 
         .footer-links {
-            margin-top: 25px;
+            margin-top: 30px;
             font-size: 0.9rem;
             color: #888;
         }
 
         .footer-links a {
-            color: #007bff;
+            color: #2e7d32;
             text-decoration: none;
             font-weight: 600;
         }
@@ -126,31 +142,32 @@
 
 <div class="login-wrapper">
     <div class="login-box">
-        <span class="brand-logo">📝</span>
+        <div class="brand-icon">👋</div>
         <h1>회원가입</h1>
-        <p class="subtitle">새로운 현장 관리자 계정을 생성합니다.</p>
+        <p class="subtitle">현장 관리자 계정을 생성합니다.</p>
 
         <form action="/register" method="post">
+
             <div class="input-group">
                 <label for="username">아이디 (ID)</label>
-                <input type="text" id="username" name="username" placeholder="사용할 아이디를 입력하세요" required autocomplete="off">
+                <input type="text" id="username" name="username" placeholder="사용할 아이디" required autocomplete="off">
             </div>
 
             <div class="input-group">
                 <label for="password">비밀번호</label>
-                <input type="password" id="password" name="password" placeholder="비밀번호를 입력하세요" required>
+                <input type="password" id="password" name="password" placeholder="비밀번호" required>
             </div>
 
             <div class="input-group">
-                <label for="name">이름 (표시명)</label>
-                <input type="text" id="name" name="name" placeholder="예: 김안전" required autocomplete="off">
+                <label for="name">이름 (실명)</label>
+                <input type="text" id="name" name="name" placeholder="예: 홍길동" required autocomplete="off">
             </div>
 
-            <button type="submit" class="submit-btn">가입하기</button>
+            <button type="submit" class="submit-btn">가입 완료</button>
         </form>
 
         <div class="footer-links">
-            이미 계정이 있으신가요? <a href="/login.html">로그인 하기</a>
+            이미 계정이 있으신가요? <a href="/login.html">로그인</a>
         </div>
     </div>
 </div>

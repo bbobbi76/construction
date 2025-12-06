@@ -4,63 +4,214 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>건설 현장 관리 시스템</title>
+
     <link rel="stylesheet" href="/common.css">
+
     <style>
-        /* 메인 화면 전용 스타일 (로그아웃 버튼 등) */
-        .top-bar {
+        /* ==========================================================================
+           메인 대시보드 전용 스타일
+           ========================================================================== */
+
+        /* --- 1. 상단 헤더 영역 --- */
+        .dashboard-header {
             display: flex;
-            justify-content: flex-end; /* 오른쪽 정렬 */
+            justify-content: space-between; /* 양쪽 끝 정렬 */
+            align-items: center;            /* 세로 중앙 정렬 */
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #eef2f6;
+            flex-wrap: wrap; /* ★ 화면이 좁아지면 요소가 겹치지 않고 줄바꿈됨 */
+            gap: 20px;       /* 줄바꿈 시 요소 간 간격 */
+        }
+
+        .welcome-box {
+            flex: 1;          /* 남은 공간을 모두 차지 (왼쪽 영역 확장) */
+            min-width: 250px; /* 너무 좁아지지 않도록 최소 너비 설정 */
+        }
+
+        .welcome-box h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            color: #2c3e50;
+            text-align: left;
+            line-height: 1.3;
+        }
+
+        .welcome-box p {
+            margin: 8px 0 0;
+            color: #7f8c8d;
+            font-size: 1rem;
+        }
+
+        /* --- 2. 사용자 정보 및 로그아웃 버튼 --- */
+        .user-actions {
+            display: flex;
             align-items: center;
-            margin-bottom: 10px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 15px;
+            gap: 15px;
+            flex-shrink: 0; /* 화면이 좁아져도 이 영역은 찌그러지지 않음 */
         }
-        .btn-logout {
-            padding: 8px 16px;
-            background-color: #6c757d; /* 회색 계열 */
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
-            font-size: 0.9rem;
+
+        .user-badge {
+            background: #e0f7fa;
+            color: #006064;
+            padding: 8px 15px;
+            border-radius: 20px;
             font-weight: 600;
-            transition: background-color 0.2s;
+            font-size: 0.9rem;
+            white-space: nowrap; /* 텍스트 줄바꿈 방지 */
         }
+
+        .btn-logout {
+            background-color: #fff;
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
         .btn-logout:hover {
-            background-color: #5a6268;
+            background-color: #e74c3c;
+            color: white;
         }
-        .welcome-msg {
-            margin-right: 15px;
-            color: #555;
+
+        /* --- 3. 메뉴 카드 그리드 레이아웃 --- */
+        .menu-grid {
+            display: grid;
+            /* 반응형 그리드: 최소 300px 크기의 카드를 화면에 꽉 차게 배치 */
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        /* 개별 카드 디자인 */
+        .menu-card {
+            background: white;
+            border-radius: 12px;
+            padding: 35px;
+            text-decoration: none; /* 링크 밑줄 제거 */
+            color: #333;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            border: 1px solid #eee;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* 부드러운 애니메이션 */
+
+            /* 내부 정렬 */
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            position: relative; /* 화살표 아이콘 절대 위치 기준 */
+            overflow: hidden;
+        }
+
+        /* 카드 마우스 오버 효과 */
+        .menu-card:hover {
+            transform: translateY(-5px); /* 살짝 위로 떠오름 */
+            box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+            border-color: #3498db;
+        }
+
+        /* 아이콘 박스 */
+        .icon-wrapper {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .menu-card h2 {
+            margin: 0 0 10px;
+            font-size: 1.4rem;
+            color: #2c3e50;
+            border: none;
+            padding: 0;
+        }
+
+        .menu-card p {
+            margin: 0;
+            color: #7f8c8d;
             font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* --- 4. 카드별 테마 색상 --- */
+        .card-construction .icon-wrapper { background-color: #e3f2fd; color: #1976d2; } /* 파랑 */
+        .card-safety .icon-wrapper { background-color: #ffebee; color: #c62828; }       /* 빨강 */
+        .card-list .icon-wrapper { background-color: #e8f5e9; color: #2e7d32; }         /* 초록 */
+
+        /* 우측 하단 화살표 아이콘 */
+        .arrow-icon {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            font-size: 1.2rem;
+            color: #ccc;
+            transition: transform 0.2s;
+        }
+
+        .menu-card:hover .arrow-icon {
+            transform: translateX(5px); /* 마우스 오버 시 오른쪽으로 이동 */
+            color: #3498db;
+        }
+
+        /* --- 5. 모바일 반응형 처리 --- */
+        @media (max-width: 600px) {
+            .dashboard-header {
+                flex-direction: column; /* 세로로 배치 */
+                align-items: flex-start;
+            }
+            .user-actions {
+                width: 100%;
+                justify-content: space-between; /* 양쪽 끝으로 벌림 */
+                margin-top: 10px;
+            }
         }
     </style>
 </head>
 <body>
 <div class="container">
 
-    <div class="top-bar">
-        <span class="welcome-msg">현장 관리자님, 환영합니다.</span>
-        <a href="/logout" class="btn-logout">로그아웃</a>
+    <div class="dashboard-header">
+        <div class="welcome-box">
+            <h1>건설 현장 관리 시스템</h1>
+            <p>오늘도 안전한 하루 되세요!</p>
+        </div>
+        <div class="user-actions">
+            <span class="user-badge">👤 현장 관리자</span>
+            <a href="/logout" class="btn-logout">로그아웃</a>
+        </div>
     </div>
 
-    <h1>건설 현장 관리 시스템</h1>
+    <div class="menu-grid">
 
-    <div class="menu-container">
-        <a href="/construction-log.html" class="menu-box">
-            <h2>공사일지</h2>
-            <p>공사 현황, 자재, 장비 투입을 기록합니다.</p>
+        <a href="/construction-log.html" class="menu-card card-construction">
+            <div class="icon-wrapper">🏗️</div>
+            <h2>공사일지 작성</h2>
+            <p>금일 작업 현황, 투입 인원, 자재 및 장비 현황을 기록합니다.</p>
+            <span class="arrow-icon">➜</span>
         </a>
 
-        <a href="/safety-log.html" class="menu-box">
-            <h2>안전일지</h2>
-            <p>일일 안전 점검 및 위험 요소를 기록합니다.</p>
+        <a href="/safety-log.html" class="menu-card card-safety">
+            <div class="icon-wrapper">🛡️</div>
+            <h2>안전일지 작성</h2>
+            <p>위험성 평가(AI), 안전 점검, TBM 활동 내역을 기록합니다.</p>
+            <span class="arrow-icon">➜</span>
         </a>
 
-        <a href="/log-list.html" class="menu-box">
-            <h2 class="list">일지 목록</h2>
-            <p>작성된 모든 일지를 조회하거나 수정합니다.</p>
+        <a href="/log-list.html" class="menu-card card-list">
+            <div class="icon-wrapper">📋</div>
+            <h2>일지 목록 조회</h2>
+            <p>작성된 모든 일지를 조회하고 PDF로 다운로드하거나 수정합니다.</p>
+            <span class="arrow-icon">➜</span>
         </a>
+
     </div>
+
 </div>
 </body>
 </html>

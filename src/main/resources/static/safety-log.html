@@ -4,105 +4,220 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>안전일지 작성</title>
+
     <link rel="stylesheet" href="/common.css">
+
+    <style>
+        /* =========================================
+           [페이지 전용 스타일] 안전 체크리스트 디자인
+           ========================================= */
+        .checklist-box {
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 20px;
+            max-height: 250px;
+            overflow-y: auto; /* 내용이 길어지면 스크롤 발생 */
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f9f9f9;
+        }
+
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+
+        .checklist-item input {
+            width: 18px;
+            height: 18px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .checklist-item label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: normal;
+            font-size: 0.95rem;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
+
     <header class="page-header">
-        <a href="/index.html" class="btn-main">&larr; 메인으로</a>
-        <a href="/log-list.html" class="btn-list">목록보기 &rarr;</a>
-    </header>
-    <h1>안전일지 작성</h1>
-    <form id="safetyLogForm">
-        <div class="form-section">
-            <h2>기본 정보</h2>
-            <div class="form-grid">
-                <div class="form-group"><label>회사명</label><input type="text" id="company" value="(주)행복건설"></div>
-                <div class="form-group"><label>작업일</label><input type="date" id="inspectionDate" required></div>
-                <div class="form-group"><label>날씨</label><input type="text" id="weather" placeholder="맑음"></div>
-                <div class="form-group"><label>현장 위치</label><input type="text" id="location" value="춘천시 OO 아파트 신축 현장" required></div>
-                <div class="form-group"><label>작성자</label><input type="text" id="author" placeholder="김안전"></div>
-                <div class="form-group"><label>확인자</label><input type="text" id="manager" placeholder="박소장"></div>
-            </div>
+        <a href="/index.html" class="btn-main">🏠 메인으로</a>
+        <div style="display:flex; gap:10px;">
+            <button type="button" id="btn-download-pdf" class="btn-pdf" style="display:none; border:1px solid #e74c3c;">
+                📄 PDF 다운로드
+            </button>
+            <a href="/log-list.html" class="btn-list">☰ 목록보기</a>
         </div>
+    </header>
+
+    <h1>안전일지 작성</h1>
+
+    <form id="safetyLogForm">
 
         <div class="form-section">
-            <h2>작업 현황</h2>
+            <h2>1. 기본 정보</h2>
             <div class="form-grid">
                 <div class="form-group">
-                    <label>공종 선택 (필수)</label>
-                    <select id="workType" class="form-control" style="padding: 12px; border: 1px solid #ccc; border-radius: 6px;">
-                        <option value="">-- 선택하세요 --</option>
-                        <option value="electric">전기 공사</option>
-                        <option value="partition">칸막이 공사</option>
-                        <option value="scaffold">비계 공사</option>
-                        <option value="plumbing">배관 공사</option>
-                        <option value="duct">덕트 공사</option>
-                        <option value="steel">철골 공사</option>
-                        <option value="form">형틀 공사</option>
-                        <option value="welding">용접 공사</option>
-                    </select>
+                    <label>회사명</label>
+                    <input type="text" id="company" value="솔아이티">
                 </div>
-                <div class="form-group"><label>총 인원</label><input type="number" id="workersCount" value="0"></div>
-            </div>
-            <div class="form-group" style="margin-top: 15px;">
-                <label>투입 인원</label><textarea id="workerNames" placeholder="김철수, 이영희..."></textarea>
-            </div>
-            <div class="form-group" style="margin-top: 15px;">
-                <label>주요 작업 내용</label><textarea id="workDetails" placeholder="작업 내용 기재"></textarea>
+                <div class="form-group">
+                    <label>점검일자</label>
+                    <input type="date" id="inspectionDate" required>
+                </div>
+                <div class="form-group">
+                    <label>날씨</label>
+                    <input type="text" id="weather" placeholder="자동 입력...">
+                </div>
+                <div class="form-group">
+                    <label>현장 위치</label>
+                    <input type="text" id="location" value="춘천시 동보 아파트">
+                </div>
+                <div class="form-group">
+                    <label>작성자</label>
+                    <input type="text" id="author" placeholder="이름 입력">
+                </div>
+                <div class="form-group">
+                    <label>안전 관리자</label>
+                    <input type="text" id="manager" placeholder="ex:홍길동">
+                </div>
             </div>
         </div>
 
         <div class="form-section">
-            <h2>위험 요인 분석 (AI 기반)</h2>
-            <div class="form-group" style="margin-bottom: 20px;">
-                <label style="color: #007bff;">📷 현장 사진 업로드 (AI 분석 대상)</label>
+            <h2>2. 금일 작업 현황</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>주요 공종 선택</label>
+                    <div style="display: flex; gap: 10px;">
+                        <select id="workTypeSelect" style="flex: 1;">
+                            <option value="">-- 선택하세요 --</option>
+                            <option value="electric">전기 공사</option>
+                            <option value="partition">경량 철골/가벽</option>
+                            <option value="scaffold">비계 설치/해체</option>
+                            <option value="plumbing">설비/배관</option>
+                            <option value="duct">덕트/환기</option>
+                            <option value="steel">철골 공사</option>
+                            <option value="form">거푸집/콘크리트</option>
+                            <option value="welding">용접 작업</option>
+                            <option value="direct">직접 입력</option>
+                        </select>
+                        <input type="text" id="workTypeDirect" style="display: none; flex: 1;" placeholder="공종 입력">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>작업 인원</label>
+                    <input type="number" id="workersCount" value="0">
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-top: 20px;">
+                <label>작업 내용 상세</label>
+                <textarea id="workDetails" placeholder="작업 내용 입력"></textarea>
+            </div>
+
+            <div class="form-group" style="margin-top: 20px;">
+                <label>작업자 명단</label>
+                <input type="text" id="workerNames" placeholder="ex:홍길동,김민수...">
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2>3. AI 위험성 평가</h2>
+
+            <div class="form-group">
+                <label style="color: #e74c3c; display:flex; align-items:center; gap:10px;">
+                    현장 사진 업로드
+                    <span style="font-size:0.8em; color:#999; font-weight:normal;">(사진 업로드 후 분석 버튼 클릭)</span>
+                </label>
                 <input type="file" id="photosInput" multiple accept="image/*">
             </div>
+
+            <div class="form-group" style="margin-top: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <label style="margin:0;">위험 요인 분석</label>
+                    <button type="button" id="btn-analyze-ai" class="ai-btn" style="background-color: #e74c3c;">
+                        위험 요인 분석
+                    </button>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>1. 잠재 위험 요인</label>
+                        <textarea id="potentialRiskFactors" style="height: 150px; background: #fff5f5; border-color: #ffcccc;" placeholder="AI 분석 결과"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>2. 안전 대책</label>
+                        <textarea id="countermeasures" style="height: 150px; background: #f0f8ff; border-color: #cceeff;" placeholder="AI 분석 결과"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2>4. 안전 점검 및 조치</h2>
             <div class="form-grid">
-                <div class="form-group" style="grid-column: span 2;">
-                    <label>1. 잠재 위험 요인 (우선순위별)</label>
-                    <textarea id="potentialRiskFactors" style="height: 120px; background: #fdfdfd;" placeholder="1. (고위험) ...&#10;2. (중위험) ..."></textarea>
-                </div>
-                <div class="form-group" style="grid-column: span 2;">
-                    <label>2. 안전 대책</label>
-                    <textarea id="countermeasures" style="height: 100px;" placeholder="1. 즉시 조치..."></textarea>
-                </div>
                 <div class="form-group">
-                    <label style="color: #d9534f;">3. 중점 위험 요인 (Core Risk)</label>
-                    <input type="text" id="majorRiskFactors" style="border-color: #d9534f; background: #fff5f5;">
+                    <label>공종별 안전 체크리스트</label>
+                    <div id="checklistContainer" class="checklist-box">
+                        <p style="color: #999; text-align: center; margin-top: 50px;">작업 현황에서 공종을 선택하세요.</p>
+                    </div>
                 </div>
+
                 <div class="form-group">
-                    <label>4. 후속 조치 사진 (개선 후)</label>
+                    <label style="color: #333;">중점 위험 관리 사항</label>
+                    <textarea id="majorRiskFactors" style="height: 80px;" placeholder="중점 위험 사항(직접입력)"></textarea>
+
+                    <label style="margin-top: 15px;">조치 후 사진 (선택)</label>
                     <input type="file" id="followUpPhotoInput" accept="image/*">
                 </div>
             </div>
-            <div class="form-group" style="margin-top: 20px;">
-                <label>공종별 안전 체크리스트</label>
-                <div id="checklistContainer" style="border: 1px solid #ddd; padding: 15px; border-radius: 6px;">
-                    <p style="color: #888; margin: 0;">작업 현황 탭에서 공종을 선택하면 항목이 나타납니다.</p>
-                </div>
-            </div>
         </div>
 
         <div class="form-section">
-            <h2>첨부 및 서명</h2>
-            <div class="form-group"><label>기타 첨부 파일</label><input type="file" id="attachmentsInput" multiple></div>
-            <div class="form-group" style="margin-top: 15px;">
-                <label>확인자 서명</label>
-                <div class="signature-pad-wrapper"><canvas id="signature-pad"></canvas></div>
-                <div class="signature-pad-actions">
-                    <button type="button" class="sig-btn" id="sig-save-btn">저장</button>
-                    <button type="button" class="sig-btn clear" id="sig-clear-btn">다시 하기</button>
-                </div>
-                <div class="form-group" style="margin-top: 15px;"><label>서명 파일 업로드</label><input type="file" id="signatureInput" accept="image/*"></div>
+            <h2>5. 기타 및 서명</h2>
+
+            <div class="form-group">
+                <label>첨부 파일</label>
+                <input type="file" id="attachmentsInput" multiple>
             </div>
-            <div class="form-group" style="margin-top: 15px;"><label>기타 특이사항</label><textarea id="remarks"></textarea></div>
+
+            <div class="form-group" style="margin-top: 20px;">
+                <label>특이사항</label>
+                <textarea id="remarks" placeholder="지적 사항 등"></textarea>
+            </div>
+
+            <div class="form-group" style="margin-top: 20px;">
+                <label>관리자 서명</label>
+                <div class="signature-pad-wrapper">
+                    <canvas id="signature-pad"></canvas>
+                </div>
+                <div class="signature-pad-actions">
+                    <button type="button" class="sig-btn" id="sig-save-btn">서명 저장</button>
+                    <button type="button" class="sig-btn clear" id="sig-clear-btn">지우기</button>
+                </div>
+                <input type="file" id="signatureInput" accept="image/*" style="display: none;">
+            </div>
         </div>
-        <button type="button" class="submit-btn" id="finalSubmitBtn">안전일지 최종 저장</button>
+
+        <button type="button" class="submit-btn" id="finalSubmitBtn" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
+            안전일지 저장 완료
+        </button>
     </form>
 </div>
-<script src="/js/signature_pad.umd.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
 <script src="/js/safety.js" defer></script>
+
 </body>
 </html>

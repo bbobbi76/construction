@@ -11,34 +11,40 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * [파일 컨트롤러]
+ * 파일 업로드 및 관리와 관련된 HTTP 요청을 처리하는 API 컨트롤러입니다.
+ */
 @RestController
 @RequestMapping("/api/files")
 public class FileController {
 
     private final FileService fileService;
 
+    // 생성자 주입 (DI)
     public FileController(FileService fileService) {
         this.fileService = fileService;
     }
 
     /**
+     * 1. 파일 업로드 API
      * [POST] /api/files/upload
-     * 클라이언트(JS)에서 보낸 파일을 서버 폴더에 저장합니다.
+     * 클라이언트가 전송한 파일을 서버 스토리지에 저장하고, 웹에서 접근 가능한 경로를 반환합니다.
      *
-     * @param file (폼 데이터의 'file' 키로 전송된 실제 파일)
-     * @return 저장된 파일의 웹 경로 (예: {"filePath": "/uploads/uuid_filename.jpg"})
+     * @param file 클라이언트 form-data의 'file' 필드로 전송된 바이너리 파일
+     * @return JSON {"filePath": "/uploads/uuid_파일명.jpg"}
      */
     @PostMapping("/upload")
     public ResponseEntity<Map<String, String>> uploadFile(@RequestParam("file") MultipartFile file) {
 
-        // 1. FileService를 호출하여 파일을 저장하고, 저장된 경로를 반환받습니다.
+        // 1. 서비스 호출: 실제 파일 저장을 수행하고, 저장된 웹 경로(String)를 받아옵니다.
         String filePath = fileService.storeFile(file);
 
-        // 2. JS가 사용하기 쉽도록 JSON 형태로 {"filePath": "..."} 맵을 만듭니다.
+        // 2. 응답 데이터 생성: 프론트엔드에서 사용하기 쉽도록 JSON Map 형태로 포장합니다.
         Map<String, String> response = new HashMap<>();
         response.put("filePath", filePath);
 
-        // 3. 200 OK 상태와 함께 JSON 맵을 반환합니다.
+        // 3. 응답 반환: HTTP 200 OK 상태와 함께 경로 데이터를 보냅니다.
         return ResponseEntity.ok(response);
     }
 }

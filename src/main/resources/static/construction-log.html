@@ -4,14 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>공사일지 작성</title>
+
     <link rel="stylesheet" href="/common.css">
 </head>
 <body>
 <div class="container">
 
     <header class="page-header">
-        <a href="/index.html" class="btn-main">&larr; 메인으로</a>
-        <a href="/log-list.html" class="btn-list">목록보기 &rarr;</a>
+        <a href="/index.html" class="btn-main">🏠 메인으로</a>
+        <div style="display:flex; gap:10px;">
+            <button type="button" id="btn-download-pdf" class="btn-pdf" style="display:none; border:1px solid #e74c3c;">
+                📄 PDF 다운로드
+            </button>
+            <a href="/log-list.html" class="btn-list">☰ 목록보기</a>
+        </div>
     </header>
 
     <h1>공사일지 작성</h1>
@@ -19,130 +25,176 @@
     <form id="constructionLogForm">
 
         <div class="form-section">
-            <h2>기본 정보</h2>
+            <h2>1. 기본 정보</h2>
             <div class="form-grid">
                 <div class="form-group">
-                    <label for="company">회사명</label>
-                    <input type="text" id="company" value="(주)행복건설">
+                    <label>회사명</label>
+                    <input type="text" id="company" value="솔아이티">
                 </div>
+
                 <div class="form-group">
-                    <label for="logDate">작업일</label>
+                    <label>작업일자</label>
                     <input type="date" id="logDate" required>
                 </div>
+
                 <div class="form-group">
-                    <label for="weather">날씨</label>
-                    <input type="text" id="weather" placeholder="맑음 (최고 20°C / 최저 10°C)">
+                    <label>날씨 / 기온</label>
+                    <input type="text" id="weather" placeholder="자동 입력 대기중...">
                 </div>
+
                 <div class="form-group">
-                    <label for="location">현장 위치</label>
-                    <input type="text" id="location" value="춘천시 OO 아파트 신축 현장" required>
+                    <label>현장 위치</label>
+                    <input type="text" id="location" value="춘천시 동보 아파트">
+                </div>
+
+                <div class="form-group">
+                    <label>작성자</label>
+                    <input type="text" id="author" placeholder="이름 입력">
+                </div>
+
+                <div class="form-group">
+                    <label>현장 관리자</label>
+                    <input type="text" id="manager" placeholder="ex:홍길동">
                 </div>
             </div>
         </div>
 
         <div class="form-section">
-            <h2>담당자 정보</h2>
+            <h2>2. 작업 현황</h2>
             <div class="form-grid">
                 <div class="form-group">
-                    <label for="author">작성자</label>
-                    <input type="text" id="author" placeholder="로그인 정보 자동 입력" readonly style="background: #f0f0f0;">
+                    <label>공종 선택</label>
+                    <div style="display: flex; gap: 10px;">
+                        <select id="workTypeSelect" style="flex: 1;">
+                            <option value="">-- 공종 선택 --</option>
+                            <option value="가설공사">가설공사</option>
+                            <option value="토공사">토공사</option>
+                            <option value="기초공사">기초공사</option>
+                            <option value="철근콘크리트공사">철근콘크리트공사</option>
+                            <option value="철골공사">철골공사</option>
+                            <option value="조적공사">조적공사</option>
+                            <option value="미장/방수공사">미장/방수공사</option>
+                            <option value="내장목공사">내장목공사</option>
+                            <option value="창호/유리공사">창호/유리공사</option>
+                            <option value="도장공사">도장공사</option>
+                            <option value="전기/설비공사">전기/설비공사</option>
+                            <option value="direct">직접 입력</option>
+                        </select>
+                        <input type="text" id="workTypeDirect" style="display: none; flex: 1;" placeholder="공종 직접 입력">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="manager">현장 관리자</label>
-                    <input type="text" id="manager" placeholder="최반장">
-                </div>
-            </div>
-        </div>
 
-        <div class="form-section">
-            <h2>작업 현황</h2>
-            <div class="form-grid">
                 <div class="form-group">
-                    <label for="workType">공종</label>
-                    <input type="text" id="workType" placeholder="철근콘크리트 공사">
-                </div>
-                <div class="form-group">
-                    <label for="workersCount">총 인원</label>
+                    <label>총 출력 인원 (명)</label>
                     <input type="number" id="workersCount" value="0">
                 </div>
             </div>
-            <div class="form-group" style="margin-top: 15px;">
-                <label for="workerNames">투입 인원 (,)로 구분)</label>
-                <textarea id="workerNames" placeholder="김철수, 이영희, 박현장"></textarea>
-            </div>
-            <div class="form-group" style="margin-top: 15px;">
-                <label for="workDetails">주요 작업 내용 (상세)</label>
-                <textarea id="workDetails" placeholder="오전: 101동 1층 슬라브 배근...&#10;오후: ..."></textarea>
-            </div>
-        </div>
 
-        <div class="form-section" style="background-color: #f8faff; border: 1px solid #cce5ff; border-radius: 8px; padding: 20px;">
-            <h2 style="color: #0056b3; border-bottom-color: #badce3;">🤖 AI 현장 분석 (사진 기반)</h2>
-            <p style="font-size: 0.9rem; color: #666; margin-bottom: 10px;">
-                업로드한 현장 사진을 AI가 분석하여 어떤 작업 중인지 요약합니다.
-            </p>
-            <div class="form-group">
-                <label for="aiWorkDescription">AI 분석 내용</label>
-                <textarea id="aiWorkDescription" style="background-color: #fff; height: 80px;"
-                          placeholder="[사진을 올리면 AI가 분석한 내용이 여기에 들어갑니다]&#10;예: 철근 배근 작업 진행 중, 자재 정리 상태 양호"></textarea>
+            <div class="form-group" style="margin-top: 20px;">
+                <label>투입 인원 명단</label>
+                <input type="text" id="workerNames" placeholder="ex:홍길동,김민수...">
+            </div>
+
+            <div class="form-group" style="margin-top: 20px;">
+                <label>금일 작업 내용 상세</label>
+                <textarea id="workDetails" placeholder="금일 진행한 세부 작업 내용을 입력하세요."></textarea>
             </div>
         </div>
 
         <div class="form-section">
-            <h2>투입 장비 및 자재</h2>
-            <table id="equipmentTable">
-                <thead><tr><th>장비명</th><th>수량</th><th style="width: 50px;">삭제</th></tr></thead>
-                <tbody id="equipmentTbody"></tbody>
-            </table>
-            <button type="button" class="row-add-btn" onclick="addEquipmentRow()">장비 추가</button>
-
-            <table id="materialTable" style="margin-top: 20px;">
-                <thead><tr><th>자재명</th><th>수량 (단위 포함)</th><th style="width: 50px;">삭제</th></tr></thead>
-                <tbody id="materialTbody"></tbody>
-            </table>
-            <button type="button" class="row-add-btn" onclick="addMaterialRow()">자재 추가</button>
-        </div>
-
-        <div class="form-section">
-            <h2>파일 및 서명</h2>
+            <h2>3. AI 현장 분석</h2>
 
             <div class="form-group">
-                <label for="photosInput">현장 사진 (AI 분석용)</label>
-                <input type="file" id="photosInput" multiple accept="image/*" capture="environment">
+                <label style="color: #007bff; display:flex; align-items:center; gap:10px;">
+                    현장 사진 업로드
+                    <span style="font-size:0.8em; color:#999; font-weight:normal;">(사진을 올리고 분석 실행 버튼을 누르세요)</span>
+                </label>
+                <input type="file" id="photosInput" multiple accept="image/*">
             </div>
 
             <div class="form-group" style="margin-top: 15px;">
-                <label for="attachmentsInput">첨부 파일 (도면, 문서 등)</label>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <label style="margin:0;">AI 분석 결과</label>
+                    <button type="button" id="btn-analyze-ai" class="ai-btn">사진 분석 실행</button>
+                </div>
+                <textarea id="aiWorkDescription" style="height: 120px; background: #f8f9fa;" placeholder="AI가 분석한 내용이 여기에 자동으로 입력됩니다."></textarea>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2>4. 자재 및 장비</h2>
+            <div class="tables-container">
+
+                <div class="table-wrapper">
+                    <div class="table-header">
+                        <span>투입 장비</span>
+                        <button type="button" class="row-add-btn" onclick="addEquipmentRow()">+ 추가</button>
+                    </div>
+                    <table id="equipmentTable">
+                        <thead>
+                        <tr>
+                            <th>장비명</th>
+                            <th style="width: 80px;">대수</th>
+                            <th style="width: 60px;">관리</th>
+                        </tr>
+                        </thead>
+                        <tbody id="equipmentTbody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="table-wrapper">
+                    <div class="table-header">
+                        <span>사용 자재</span>
+                        <button type="button" class="row-add-btn" onclick="addMaterialRow()">+ 추가</button>
+                    </div>
+                    <table id="materialTable">
+                        <thead>
+                        <tr>
+                            <th>자재명</th>
+                            <th style="width: 100px;">수량</th>
+                            <th style="width: 60px;">관리</th>
+                        </tr>
+                        </thead>
+                        <tbody id="materialTbody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2>5. 기타 및 서명</h2>
+
+            <div class="form-group">
+                <label>기타 첨부 파일</label>
                 <input type="file" id="attachmentsInput" multiple>
             </div>
 
-            <div class="form-group" style="margin-top: 15px;">
+            <div class="form-group" style="margin-top: 20px;">
+                <label>특이사항</label>
+                <textarea id="remarks" placeholder="작업 중 특이사항이나 지시사항 입력"></textarea>
+            </div>
+
+            <div class="form-group" style="margin-top: 20px;">
                 <label>관리자 서명</label>
                 <div class="signature-pad-wrapper">
                     <canvas id="signature-pad"></canvas>
                 </div>
                 <div class="signature-pad-actions">
-                    <button type="button" class="sig-btn" id="sig-save-btn">저장</button>
-                    <button type="button" class="sig-btn clear" id="sig-clear-btn">다시 하기</button>
+                    <button type="button" class="sig-btn" id="sig-save-btn">서명 저장</button>
+                    <button type="button" class="sig-btn clear" id="sig-clear-btn">지우기</button>
                 </div>
-                <div class="form-group" style="margin-top: 15px;">
-                    <label for="signatureInput">서명 파일 업로드</label>
-                    <input type="file" id="signatureInput" accept="image/*">
-                </div>
-            </div>
-
-            <div class="form-group" style="margin-top: 15px;">
-                <label for="remarks">특이사항</label>
-                <textarea id="remarks" placeholder="오후 3시 TBM 실시, 특이사항 없음"></textarea>
+                <input type="file" id="signatureInput" accept="image/*" style="display: none;">
             </div>
         </div>
 
-        <button type="button" class="submit-btn" id="finalSubmitBtn">공사일지 최종 저장</button>
-
+        <button type="button" class="submit-btn" id="finalSubmitBtn">공사일지 저장 완료</button>
     </form>
 </div>
 
-<script src="/js/signature_pad.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+
 <script src="/js/construction.js" defer></script>
 </body>
 </html>
